@@ -218,3 +218,15 @@ mat4x4 MakeRotateZMatrix(float radian)
 	mat.m[3][0] = 0.0f, mat.m[3][1] = 0.0f, mat.m[3][2] = 0.0f, mat.m[3][3] = 1.0f;
 	return mat;
 }
+
+mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
+{
+	mat4x4 tmp = Mul(MakeRotateXMatrix(rotate.x),Mul(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
+	
+	mat4x4 mat;
+	mat.m[0][0] = scale.x * tmp.m[0][0], mat.m[0][1] = scale.x * tmp.m[0][1], mat.m[0][2] = scale.x * tmp.m[0][2], mat.m[0][3] = 0.0f;
+	mat.m[1][0] = scale.y * tmp.m[1][0], mat.m[1][1] = scale.y * tmp.m[1][1], mat.m[1][2] = scale.y * tmp.m[1][2], mat.m[1][3] = 0.0f;
+	mat.m[2][0] = scale.z * tmp.m[2][0], mat.m[2][1] = scale.z * tmp.m[2][1], mat.m[2][2] = scale.z * tmp.m[2][2], mat.m[2][3] = 0.0f;
+	mat.m[3][0] = translate.x, mat.m[3][1] = translate.y, mat.m[3][2] = translate.z, mat.m[3][3] = 1.0f;
+	return mat;
+}
