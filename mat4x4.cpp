@@ -221,7 +221,7 @@ mat4x4 MakeRotateZMatrix(float radian)
 
 mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
 {
-	mat4x4 tmp = Mul(MakeRotateXMatrix(rotate.x),Mul(MakeRotateXMatrix(rotate.y), MakeRotateXMatrix(rotate.z)));
+	mat4x4 tmp = Mul(MakeRotateXMatrix(rotate.x),Mul(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
 	
 	mat4x4 mat;
 	mat.m[0][0] = scale.x * tmp.m[0][0], mat.m[0][1] = scale.x * tmp.m[0][1], mat.m[0][2] = scale.x * tmp.m[0][2], mat.m[0][3] = 0.0f;
