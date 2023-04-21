@@ -1,5 +1,6 @@
 #include "mat4x4.h"
 #include <cassert>
+#include <cmath>
 mat4x4::mat4x4()
 {
 	m[0][0] = 1.0f, m[0][1] = 0.0f, m[0][2] = 0.0f, m[0][3] = 0.0f;
@@ -186,4 +187,34 @@ Vector3 Transform(const Vector3& vector, const mat4x4& matrix)
 	result.z /= w;
 	return result;
 	
+}
+
+mat4x4 MakeRotateXMatrix(float radian)
+{
+	mat4x4 mat;
+	mat.m[0][0] = 1.0f, mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
+	mat.m[1][0] = 0.0f, mat.m[1][1] = std::cos(radian), mat.m[1][2] = std::sin(radian), mat.m[1][3] = 0.0f;
+	mat.m[2][0] = 0.0f, mat.m[2][1] = -std::sin(radian), mat.m[2][2] = std::cos(radian), mat.m[2][3] = 0.0f;
+	mat.m[3][0] = 0.0f, mat.m[3][1] = 0.0f, mat.m[3][2] = 0.0f, mat.m[3][3] = 1.0f;
+	return mat;
+}
+
+mat4x4 MakeRotateYMatrix(float radian)
+{
+	mat4x4 mat;
+	mat.m[0][0] = std::cos(radian), mat.m[0][1] = 0.0f, mat.m[0][2] = -std::sin(radian), mat.m[0][3] = 0.0f;
+	mat.m[1][0] = 0.0f, mat.m[1][1] = 1.0f, mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
+	mat.m[2][0] = std::sin(radian), mat.m[2][1] = 0.0f, mat.m[2][2] = std::cos(radian), mat.m[2][3] = 0.0f;
+	mat.m[3][0] = 0.0f, mat.m[3][1] = 0.0f, mat.m[3][2] = 0.0f, mat.m[3][3] = 1.0f;
+	return mat;
+}
+
+mat4x4 MakeRotateZMatrix(float radian)
+{
+	mat4x4 mat;
+	mat.m[0][0] = std::cos(radian), mat.m[0][1] = std::sin(radian), mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
+	mat.m[1][0] = -std::sin(radian), mat.m[1][1] = std::cos(radian), mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
+	mat.m[2][0] = 0.0f, mat.m[2][1] = 0.0f, mat.m[2][2] = 1.0f, mat.m[2][3] = 0.0f;
+	mat.m[3][0] = 0.0f, mat.m[3][1] = 0.0f, mat.m[3][2] = 0.0f, mat.m[3][3] = 1.0f;
+	return mat;
 }

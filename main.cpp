@@ -28,15 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, 1280, 720);
 
-	Vector3 translate{ 4.1f,2.6f,0.8f };
-	Vector3 scale{ 1.5f,5.2f,7.3f };
-	Vector3 point{ 2.3f,3.8f,1.4f };
-	mat4x4 transformMatrix = {
-		1.0f,2.0f,3.0f,4.0f,
-		3.0f,1.0f,1.0f,2.0f,
-		1.0f,4.0f,2.0f,3.0f,
-		2.0f,2.0f,1.0f,3.0f
-	};
+	Vector3 rotate{ 0.4f,1.43f,-0.8f };
 
 
 	// キー入力結果を受け取る箱
@@ -55,9 +47,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		mat4x4 translateMatrix = MakeTranslateMatrix(translate);
-		mat4x4 scaleMatrix = MakeScaleMatrix(scale);
-		Vector3 transformed = Transform(point, transformMatrix);
+		mat4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+		mat4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+		mat4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+		mat4x4 rotateXYZMatrix = Mul(rotateXMatrix, Mul(rotateYMatrix, rotateZMatrix));
 		///
 		/// ↑更新処理ここまで
 		///
@@ -65,9 +58,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		VectorScreenPrintf(0, 0, transformed, "transformed");
-		MatrixScreenPrintf(0, kRowHeight, translateMatrix, "translateMatrix");
-		MatrixScreenPrintf(0, kRowHeight * 6, scaleMatrix, "scaleMatrix");
+		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5, rotateYMatrix, "rotateYMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 2, rotateZMatrix, "rotateZMatrix");
+		MatrixScreenPrintf(0, kRowHeight * 5 * 3, rotateXYZMatrix, "rotateXYZMatrix");
 		///
 		/// ↑描画処理ここまで
 		///

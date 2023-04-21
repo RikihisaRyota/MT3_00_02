@@ -41,3 +41,10 @@ mat4x4 MakeTranslateMatrix(const Vector3& translate);
 mat4x4 MakeScaleMatrix(const Vector3& scale);
 //3,À•W•ÏŠ·
 Vector3 Transform(const Vector3& vector, const mat4x4& matrix);
+
+//1,X²‰ñ“]s—ñ
+mat4x4 MakeRotateXMatrix(float radian);
+//2,Y²‰ñ“]s—ñ
+mat4x4 MakeRotateYMatrix(float radian);
+//3,Z²‰ñ“]s—ñ
+mat4x4 MakeRotateZMatrix(float radian);
