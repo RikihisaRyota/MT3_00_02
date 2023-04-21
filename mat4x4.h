@@ -1,4 +1,5 @@
 #pragma once
+#include "Vector3.h"
 class mat4x4
 {
 public:
@@ -33,3 +34,10 @@ mat4x4 Inverse(const mat4x4& m);
 mat4x4 Transpose(const mat4x4& m);
 //6,単位行列
 mat4x4 MakeIdentity4x4();
+
+//1,平行移動行列
+mat4x4 MakeTranslateMatrix(const Vector3& translate);
+//2,拡大縮小行列
+mat4x4 MakeScaleMatrix(const Vector3& scale);
+//3,座標変換
+Vector3 Transform(const Vector3& vector, const mat4x4& matrix);
