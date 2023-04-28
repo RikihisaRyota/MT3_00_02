@@ -20,41 +20,41 @@ public:
 	}
 };
 
-//1,s—ñ‚Ì‰Á–@
+//1,è¡Œåˆ—ã®åŠ æ³•
 mat4x4 Add(const mat4x4& m1, const mat4x4& m2);
-//2,s—ñ‚ÌŒ¸Z
+//2,è¡Œåˆ—ã®æ¸›ç®—
 mat4x4 Sub(const mat4x4& m1, const mat4x4& m2);
-//3,s—ñ‚ÌÏ
+//3,è¡Œåˆ—ã®ç©
 mat4x4 Mul(const mat4x4& m1, const mat4x4& m2);
-//3,s—ñ‚ÌÏ(ƒXƒJƒ‰[”{)
+//3,è¡Œåˆ—ã®ç©(ã‚¹ã‚«ãƒ©ãƒ¼å€)
 mat4x4 Mul(const float scaler, const mat4x4& m2);
-//4,‹ts—ñ
+//4,é€†è¡Œåˆ—
 mat4x4 Inverse(const mat4x4& m);
-//5,“]’us—ñ
+//5,è»¢ç½®è¡Œåˆ—
 mat4x4 Transpose(const mat4x4& m);
-//6,’PˆÊs—ñ
+//6,å˜ä½è¡Œåˆ—
 mat4x4 MakeIdentity4x4();
 
-//1,•½sˆÚ“®s—ñ
+//1,å¹³è¡Œç§»å‹•è¡Œåˆ—
 mat4x4 MakeTranslateMatrix(const Vector3& translate);
-//2,Šg‘åk¬s—ñ
+//2,æ‹¡å¤§ç¸®å°è¡Œåˆ—
 mat4x4 MakeScaleMatrix(const Vector3& scale);
-//3,À•W•ÏŠ·
+//3,åº§æ¨™å¤‰æ›
 Vector3 Transform(const Vector3& vector, const mat4x4& matrix);
 
-//1,X²‰ñ“]s—ñ
+//1,Xè»¸å›è»¢è¡Œåˆ—
 mat4x4 MakeRotateXMatrix(float radian);
-//2,Y²‰ñ“]s—ñ
+//2,Yè»¸å›è»¢è¡Œåˆ—
 mat4x4 MakeRotateYMatrix(float radian);
-//3,Z²‰ñ“]s—ñ
+//3,Zè»¸å›è»¢è¡Œåˆ—
 mat4x4 MakeRotateZMatrix(float radian);
 
-//3ŸŒ³ƒAƒtƒBƒ“•ÏŠ·
+//3æ¬¡å…ƒã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›
 mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
-//1,“§‹“Š‰es—ñ
+//1,é€è¦–æŠ•å½±è¡Œåˆ—
 mat4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
-//2,³Ë‰es—ñ
+//2,æ­£å°„å½±è¡Œåˆ—
 mat4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
-//3,ƒrƒ…[ƒ|[ƒg•ÏŠ·s—ñ
+//3,ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆå¤‰æ›è¡Œåˆ—
 mat4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
