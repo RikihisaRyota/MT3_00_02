@@ -36,6 +36,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 rotate{ 0.0f,0.0f,0.0f };
 	Vector3 translate{ 0.0f,0.0f,10.0f };
 	Vector3 cameraPosition{ 0.0f,0.0f,0.0f };
+	Vector3 camera{ 0.0f,0.0f,1.0f };
 
 	Vector3 kLocalvertices[3];
 	kLocalvertices[0] = { 0.5f,0.0f,0.0f };
@@ -98,12 +99,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		VectorScreenPrintf(0, 0, cross, "Cross");
-		Novice::DrawTriangle(
-			int(screenVertices[0].x), int(screenVertices[0].y),
-			int(screenVertices[1].x), int(screenVertices[1].y),
-			int(screenVertices[2].x), int(screenVertices[2].y),
-			RED, kFillModeSolid
-		);
+		if (Dot(camera,(Cross(screenVertices[1] - screenVertices[0], screenVertices[2] - screenVertices[1])))<= 0.0f) {
+			Novice::DrawTriangle(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				int(screenVertices[2].x), int(screenVertices[2].y),
+				RED, kFillModeSolid
+			);
+		}
+		
 		/// ↑描画処理ここまで
 		///
 
