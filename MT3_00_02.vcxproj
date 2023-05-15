@@ -140,6 +140,7 @@
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
     <ClInclude Include="mat4x4.h" />
     <ClInclude Include="Matrix33 .h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
