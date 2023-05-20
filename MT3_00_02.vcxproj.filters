@@ -44,6 +44,12 @@
     <ClCompile Include="..\..\..\..\..\KamataEngine\DirectXGame\math\Vector3.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="MyMath.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -118,5 +124,7 @@
     <ClInclude Include="Matrix33 .h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="MyMath.h" />
   </ItemGroup>
 </Project>

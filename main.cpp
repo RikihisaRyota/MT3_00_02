@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "mat4x4.h"
 #include "Sphere.h"
+#include "MyMath.h"
 #define _USE_MATH_DEFINES
 #include <Math.h> 
 const char kWindowTitle[] = "学籍番号";
@@ -87,12 +88,10 @@ void DrawSphere(const Sphere& sphere, const mat4x4& viewProjectionMatrix, const 
 	// 分割数
 	const uint32_t kSubdivision = 30;
 	// 経度分割1つ分の角度
-	const float kLonEvery = (360.0f / kSubdivision)* static_cast<float>(M_PI) / 180.0f;
+	const float kLonEvery = static_cast<float>(M_PI) * 2.0f / kSubdivision;;
 	// 緯度分割1つ分の角度
-	const float kLatEvery = (360.0f / kSubdivision) * static_cast<float>(M_PI) / 180.0f;
-
-	float theta_b = static_cast<float>(M_PI) / kSubdivision;
-	float ph_b = static_cast<float>(M_PI) * 2.0f / kSubdivision;
+	const float kLatEvery = static_cast<float>(M_PI) / kSubdivision;
+	
 	// 緯度の方向に分割 -M_PI/2 ~ M_PI/2
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		//現在の緯度
@@ -103,9 +102,9 @@ void DrawSphere(const Sphere& sphere, const mat4x4& viewProjectionMatrix, const 
 			float lon = lonIndex * kLonEvery;
 			// world座標系でのa,b,cを求める
 			Vector3 a, b, c;
-			a = sphere.center_ + (Vector3(cosf(lat) * cosf(lon), sinf(lat), cosf(lat) * sinf(lon)) * sphere.radius_);
-			b = sphere.center_ + (Vector3(cosf(lat + theta_b) * cosf(lon), sinf(lat + theta_b), cosf(lat + theta_b) * sinf(lon)) * sphere.radius_);
-			c = sphere.center_ + (Vector3(cosf(lat) * cosf(lon + ph_b), sinf(lat), cosf(lat) * sinf(lon + ph_b)) * sphere.radius_);
+			a = sphere.center_ + (Vector3(std::cos(lat) * std::cos(lon), std::sin(lat), std::cos(lat) * std::sin(lon)) * sphere.radius_);
+			b = sphere.center_ + (Vector3(std::cos(lat + kLatEvery) * std::cos(lon), std::sin(lat + kLatEvery), std::cos(lat + kLatEvery) * std::sin(lon)) * sphere.radius_);
+			c = sphere.center_ + (Vector3(std::cos(lat) * std::cos(lon + kLonEvery), std::sin(lat), std::cos(lat) * std::sin(lon + kLonEvery)) * sphere.radius_);
 
 			Vector3 ndc_a = Transform(a, viewProjectionMatrix);
 			Vector3 screen_a = Transform(ndc_a, viewportMatrix);
@@ -135,6 +134,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraScale{ 1.0f,1.0f,1.0f };
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
+
+	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Vector3 point{ -1.5f,0.6f,0.6f };
+
 
 	Vector3 kLocalvertices[3];
 	kLocalvertices[0] = { 0.5f,0.0f,0.0f };
@@ -169,16 +172,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector3 cross = Cross(v1, v2);
 
 		if (keys[DIK_W]) {
-			translate.z += 0.1f;
+			point.y += 0.05f;
 		}
 		if (keys[DIK_S]) {
-			translate.z -= 0.1f;
+			point.y -= 0.05f;
 		}
 		if (keys[DIK_D]) {
-			translate.x += 0.1f;
+			point.x += 0.05f;
 		}
 		if (keys[DIK_A]) {
-			translate.x -= 0.1f;
+			point.x -= 0.05f;
 		}
 		rotate.y += 0.02f;
 		mat4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
@@ -192,9 +195,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Vector3 ndcVertex = Transform(kLocalvertices[i], worldViewProjectionMatrix);
 			screenVertices[i] = Transform(ndcVertex, viewportMatrix);
 		}
+
+		mat4x4 viewProjectMatrix = Mul(viewMatrix, projectionMatrix);
+		Vector3 project = Project((point - segment.origin), segment.diff);
+		Vector3 closestPoint = ClosestPoint(point,segment);
+
+		Sphere pointSphere{ point,0.01f };// 1cmの球を描画
+		Sphere colosetPointSphere{ closestPoint ,0.01f };
+
+		Vector3 start = Transform(Transform(segment.origin, viewProjectMatrix),viewportMatrix);
+		Vector3 end = Transform(Transform((segment.origin + segment.diff), viewProjectMatrix),viewportMatrix);
+
+
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::End();
 		///
 		/// ↑更新処理ここまで
@@ -203,18 +219,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		DrawGrid(Mul(viewMatrix, projectionMatrix), viewportMatrix);
-		DrawSphere(sphere, Mul(viewMatrix, projectionMatrix), viewportMatrix, BLACK);
-		/*VectorScreenPrintf(0, 0, cross, "Cross");*/
-		/*if (Dot(camera, (Cross(screenVertices[1] - screenVertices[0], screenVertices[2] - screenVertices[1]))) <= 0.0f) {
-			Novice::DrawTriangle(
-				int(screenVertices[0].x), int(screenVertices[0].y),
-				int(screenVertices[1].x), int(screenVertices[1].y),
-				int(screenVertices[2].x), int(screenVertices[2].y),
-				RED, kFillModeSolid
-			);
-		}*/
+		DrawGrid(viewProjectMatrix, viewportMatrix);
+		//DrawSphere(sphere, viewProjectMatrix, viewportMatrix, BLACK);
+		DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix, RED);
+		DrawSphere(colosetPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
 
+		Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y),WHITE);
 		/// ↑描画処理ここまで
 		///
 

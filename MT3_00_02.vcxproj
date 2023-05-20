@@ -109,6 +109,8 @@
     <ClCompile Include="C:\KamataEngine\Adapter\Novice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mat4x4.cpp" />
+    <ClCompile Include="MyMath.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -138,8 +140,10 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\input\Input.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\scene\GameScene.h" />
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="mat4x4.h" />
     <ClInclude Include="Matrix33 .h" />
+    <ClInclude Include="MyMath.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>
