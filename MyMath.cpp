@@ -266,7 +266,24 @@ Vector3 operator*(const mat4x4& matrix, const Vector3& vector)
 	return result;
 }
 
+Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
+	return { (v1.x - v2.x), (v1.y - v2.y), (v1.z - v2.z) };
+}
+
 float Dot(const Vector3& a, const Vector3& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+float Length(const Vector3& a)
+{
+	return sqrtf( (a.x * a.x)+ (a.y * a.y)+ (a.z * a.z) );
+}
+
+
+float Dot(const Vec2& a, const Vec2& b) { return a.x * b.x + a.y * b.y; }
+
+float Length(const Vec2& a, const Vec2& b)
+{
+	return sqrtf(Dot(a,b));
+}
 
 Vector3 Cross(const Vector3& a, const Vector3& b) {
 	return { a.y * b.z - a.z * b.y,

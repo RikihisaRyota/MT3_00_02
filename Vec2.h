@@ -3,161 +3,161 @@
 #include <math.h>
 struct Vec2
 {
-	/// ƒƒ“ƒo•Ï”
+	/// ãƒ¡ãƒ³ãƒå¤‰æ•°
 
-	float x; //¬•ªx
-	float y; //¬•ªy
+	float x; //æˆåˆ†x
+	float y; //æˆåˆ†y
 
 
 
-/// ƒƒ“ƒoŠÖ”
+/// ãƒ¡ãƒ³ãƒé–¢æ•°
 
 	/// <summary>
-	/// ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	/// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	/// </summary>
 	Vec2();
 
 
 	/// <summary>
-	/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	/// </summary>
-	/// <param name="nx"> x¬•ª</param>
-	/// <param name="ny"> y¬•ª</param>
+	/// <param name="nx"> xæˆåˆ†</param>
+	/// <param name="ny"> yæˆåˆ†</param>
 	 Vec2(float nx, float ny);
 
 	/// <summary>
-	/// ’·‚³‚ğ‹‚ß‚éŠÖ”
+	/// é•·ã•ã‚’æ±‚ã‚ã‚‹é–¢æ•°
 	/// </summary>
-	/// <returns>floatŒ^</returns>
+	/// <returns>floatå‹</returns>
 	float Length() const;
 
 	/// <summary>
-	/// ’·‚³‚Ì2æ‚ğ‹‚ß‚éŠÖ”
+	/// é•·ã•ã®2ä¹—ã‚’æ±‚ã‚ã‚‹é–¢æ•°
 	/// </summary>
-	/// <returns>floatŒ^</returns>
+	/// <returns>floatå‹</returns>
 	float LengthSquare() const;
 
 	/// <summary>
-	/// ˆø”‚ÌƒxƒNƒgƒ‹‚Æ‚Ì“àÏ
+	/// å¼•æ•°ã®ãƒ™ã‚¯ãƒˆãƒ«ã¨ã®å†…ç©
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>floatŒ^</returns>
+	/// <returns>floatå‹</returns>
 	 float Dot(const Vec2& other) const;
 
 	/// <summary>
-	/// ˆø”‚ÌƒxƒNƒgƒ‹‚Æ‚ÌŠOÏ
+	/// å¼•æ•°ã®ãƒ™ã‚¯ãƒˆãƒ«ã¨ã®å¤–ç©
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>floatŒ^</returns>
+	/// <returns>floatå‹</returns>
 	 float Cross(const Vec2& other) const;
 
 	/// <summary>
-	/// ˆø”‚ÌƒxƒNƒgƒ‹‚Æ‚Ì‹——£
+	/// å¼•æ•°ã®ãƒ™ã‚¯ãƒˆãƒ«ã¨ã®è·é›¢
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>floatŒ^</returns>
+	/// <returns>floatå‹</returns>
 	float DistanceFrom(const Vec2& other) const;
 
 	/// <summary>
-	/// ³‹K‰»
+	/// æ­£è¦åŒ–
 	/// </summary>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	Vec2 Normalized() const;
 
 	/// <summary>
-	/// ƒ[ƒƒxƒNƒgƒ‹‚Å‚ ‚é‚©
+	/// ã‚¼ãƒ­ãƒ™ã‚¯ãƒˆãƒ«ã§ã‚ã‚‹ã‹
 	/// </summary>
-	/// <returns>true: 0‚Å‚ ‚é   false: 0‚Å‚È‚¢</returns>
+	/// <returns>true: 0ã§ã‚ã‚‹   false: 0ã§ãªã„</returns>
 	 bool isZero() const;
 
 	/// <summary>
-	/// ƒ[ƒƒxƒNƒgƒ‹‚É‚·‚é
+	/// ã‚¼ãƒ­ãƒ™ã‚¯ãƒˆãƒ«ã«ã™ã‚‹
 	/// </summary>
 	void setZero();
 
 	/// <summary>
-	/// ƒxƒNƒgƒ‹‚Ì‰ñ“]
+	/// ãƒ™ã‚¯ãƒˆãƒ«ã®å›è»¢
 	/// </summary>
-	/// <param name="t"> ‰ñ“]Šp“xƒ‰ƒWƒAƒ“</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <param name="t"> å›è»¢è§’åº¦ãƒ©ã‚¸ã‚¢ãƒ³</param>
+	/// <returns>Vec2å‹</returns>
 	Vec2 Rotation(float t) const;
 
 
 	/// <summary>
-	/// ’P€ + 
+	/// å˜é … + 
 	/// </summary>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	Vec2 operator +() const;
 
 	/// <summary>
-	/// ’P€ - 
+	/// å˜é … - 
 	/// </summary>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	 Vec2 operator -() const;
 
 	/// <summary>
-	/// 2€ + 
+	/// 2é … + 
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	 Vec2 operator +(const Vec2& other) const;
 
 	/// <summary>
-	/// 2€ - 
+	/// 2é … - 
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	 Vec2 operator -(const Vec2& other) const;
 
 	/// <summary>
-	/// 2€ * 
+	/// 2é … * 
 	/// </summary>
-	/// <param name="s"> s”{</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <param name="s"> så€</param>
+	/// <returns>Vec2å‹</returns>
 	Vec2 operator *(float s) const;
 
 	/// <summary>
-	/// 2€ / 
+	/// 2é … / 
 	/// </summary>
-	/// <param name="s">  1 / s”{</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <param name="s">  1 / så€</param>
+	/// <returns>Vec2å‹</returns>
 	 Vec2 operator /(float s) const;
 
 	/// <summary>
-	/// •¡‡‘ã“ü‰‰Z +=
+	/// è¤‡åˆä»£å…¥æ¼”ç®— +=
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	Vec2& operator +=(const Vec2& other);
 
 	/// <summary>
-	/// •¡‡‘ã“ü‰‰Z -=
+	/// è¤‡åˆä»£å…¥æ¼”ç®— -=
 	/// </summary>
 	/// <param name="other"> Vec2</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <returns>Vec2å‹</returns>
 	Vec2& operator -=(const Vec2& other);
 
 	/// <summary>
-	/// •¡‡‘ã“ü‰‰Z *= 
+	/// è¤‡åˆä»£å…¥æ¼”ç®— *= 
 	/// </summary>
-	/// <param name="s"> s”{</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <param name="s"> så€</param>
+	/// <returns>Vec2å‹</returns>
 	Vec2& operator *=(float s);
 
 	/// <summary>
-	/// •¡‡‘ã“ü‰‰Z /= 
+	/// è¤‡åˆä»£å…¥æ¼”ç®— /= 
 	/// </summary>
-	/// <param name="s"> 1 / s”{</param>
-	/// <returns>Vec2Œ^</returns>
+	/// <param name="s"> 1 / så€</param>
+	/// <returns>Vec2å‹</returns>
 	Vec2& operator /=(float s);
 
 };
 
 /// <summary>
-/// Vec2 ‚ªŒã‚É‚­‚é 2€ * 
+/// Vec2 ãŒå¾Œã«ãã‚‹ 2é … * 
 /// </summary>
-/// <param name="s"> s”{</param>
+/// <param name="s"> så€</param>
 /// <param name="v"> Vec2</param>
-/// <returns>Vec2Œ^</returns>
+/// <returns>Vec2å‹</returns>
  Vec2 operator *(float s, const Vec2& v);
 

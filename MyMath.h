@@ -2,6 +2,7 @@
 #include "mat4x4.h"
 #include "Vector3.h"
 #include "Line.h"
+#include "Vec2.h"
 
 //1,行列の加法
 mat4x4 Add(const mat4x4& m1, const mat4x4& m2);
@@ -46,7 +47,16 @@ mat4x4 MakeViewportMatrix(float left, float top, float width, float height, floa
 Vector3 operator* (const mat4x4& mat, const Vector3& v);
 
 //内積
+
+Vector3 Subtract(const Vector3& v1, const Vector3& v2);
+
 float Dot(const Vector3& a, const Vector3& b);
+
+float Length(const Vector3& a);
+
+float Dot(const Vec2& a, const Vec2& b);
+
+float Length(const Vec2& a, const Vec2& b);
 
 //クロス積
 Vector3 Cross(const Vector3& v1, const Vector3& v2);

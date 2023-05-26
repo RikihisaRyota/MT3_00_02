@@ -4,6 +4,8 @@
 #include "mat4x4.h"
 #include "Sphere.h"
 #include "MyMath.h"
+#include "Collision.h"
+
 #define _USE_MATH_DEFINES
 #include <Math.h> 
 const char kWindowTitle[] = "学籍番号";
@@ -91,7 +93,7 @@ void DrawSphere(const Sphere& sphere, const mat4x4& viewProjectionMatrix, const 
 	const float kLonEvery = static_cast<float>(M_PI) * 2.0f / kSubdivision;;
 	// 緯度分割1つ分の角度
 	const float kLatEvery = static_cast<float>(M_PI) / kSubdivision;
-	
+
 	// 緯度の方向に分割 -M_PI/2 ~ M_PI/2
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		//現在の緯度
@@ -148,9 +150,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 
 
-	Sphere sphere = {
+	Sphere sphere_1 = {
+		{0.5f,0.0f,0.0f},
+		{0.1f}
+	};
+
+	Sphere sphere_2 = {
 		{0.0f,0.0f,0.0f},
-		{0.5f}
+		{0.3f}
 	};
 
 	// キー入力結果を受け取る箱
@@ -172,16 +179,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector3 cross = Cross(v1, v2);
 
 		if (keys[DIK_W]) {
-			point.y += 0.05f;
+			sphere_2.center_.z += 0.05f;
 		}
 		if (keys[DIK_S]) {
-			point.y -= 0.05f;
+			sphere_2.center_.z -= 0.05f;
 		}
 		if (keys[DIK_D]) {
-			point.x += 0.05f;
+			sphere_2.center_.x += 0.05f;
 		}
 		if (keys[DIK_A]) {
-			point.x -= 0.05f;
+			sphere_2.center_.x -= 0.05f;
+		}
+		if (keys[DIK_UPARROW]) {
+			sphere_2.center_.y += 0.05f;
+		}
+		if (keys[DIK_DOWNARROW]) {
+			sphere_2.center_.y -= 0.05f;
 		}
 		rotate.y += 0.02f;
 		mat4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
@@ -197,20 +210,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		mat4x4 viewProjectMatrix = Mul(viewMatrix, projectionMatrix);
-		Vector3 project = Project((point - segment.origin), segment.diff);
-		Vector3 closestPoint = ClosestPoint(point,segment);
+		//Vector3 project = Project((point - segment.origin), segment.diff);
+		//Vector3 closestPoint = ClosestPoint(point,segment);
 
-		Sphere pointSphere{ point,0.01f };// 1cmの球を描画
-		Sphere colosetPointSphere{ closestPoint ,0.01f };
+		//Sphere pointSphere{ point,0.01f };// 1cmの球を描画
+		//Sphere colosetPointSphere{ closestPoint ,0.01f };
 
-		Vector3 start = Transform(Transform(segment.origin, viewProjectMatrix),viewportMatrix);
-		Vector3 end = Transform(Transform((segment.origin + segment.diff), viewProjectMatrix),viewportMatrix);
+		//Vector3 start = Transform(Transform(segment.origin, viewProjectMatrix),viewportMatrix);
+		//Vector3 end = Transform(Transform((segment.origin + segment.diff), viewProjectMatrix),viewportMatrix);
 
+
+		ImGui::Begin("sphere_2");
+		ImGui::DragFloat3("CameraTranslate", &sphere_2.center_.x, 0.01f);
+		ImGui::End();
 
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
-		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		ImGui::End();
 		///
 		/// ↑更新処理ここまで
@@ -219,12 +235,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		DrawGrid(viewProjectMatrix, viewportMatrix);
-		//DrawSphere(sphere, viewProjectMatrix, viewportMatrix, BLACK);
-		DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix, RED);
-		DrawSphere(colosetPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
+		
+		if (IsCollision(sphere_1, sphere_2)) {
+			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, RED);
+		}
+		else {
+			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, BLACK);
+		}
+		DrawSphere(sphere_2, viewProjectMatrix, viewportMatrix, BLACK);
+		//DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix, RED);
+		//DrawSphere(colosetPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
 
-		Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y),WHITE);
+		//Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y),WHITE);
+		
+		DrawGrid(viewProjectMatrix, viewportMatrix);
 		/// ↑描画処理ここまで
 		///
 
