@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "mat4x4.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "MyMath.h"
 #include "Collision.h"
 
@@ -123,6 +124,27 @@ void DrawSphere(const Sphere& sphere, const mat4x4& viewProjectionMatrix, const 
 
 }
 
+void DrawPlane(const Plane& plane, const mat4x4& viewProjeectionMatrix, const mat4x4& viewportMatrix, uint32_t color) {
+	Vector3 center = plane.distanse_ * plane.normal_;// 1
+	Vector3 perpendiculars[4];
+	perpendiculars[0] = Normalize(Perpendicular(plane.normal_));// 2
+	perpendiculars[1] = { -perpendiculars[0].x,-perpendiculars[0].y,-perpendiculars[0].z };
+	perpendiculars[2] = Cross(plane.normal_, perpendiculars[0]);// 4
+	perpendiculars[3] = { -perpendiculars[2].x,-perpendiculars[2].y,-perpendiculars[2].z };
+	// 6
+	Vector3 points[4];
+	for (int32_t index = 0; index < 4; ++index) {
+		Vector3 extend = perpendiculars[index] * 2.0f;
+		Vector3 point = center + extend;
+		points[index] = Transform(Transform(point, viewProjeectionMatrix), viewportMatrix);
+	}
+	Novice::DrawLine(static_cast<int>(points[0].x), static_cast<int>(points[0].y), static_cast<int>(points[3].x), static_cast<int>(points[3].y), color);
+	Novice::DrawLine(static_cast<int>(points[0].x), static_cast<int>(points[0].y), static_cast<int>(points[2].x), static_cast<int>(points[2].y), color);
+	Novice::DrawLine(static_cast<int>(points[1].x), static_cast<int>(points[1].y), static_cast<int>(points[2].x), static_cast<int>(points[2].y), color);
+	Novice::DrawLine(static_cast<int>(points[1].x), static_cast<int>(points[1].y), static_cast<int>(points[3].x), static_cast<int>(points[3].y), color);
+}
+
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -149,8 +171,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 v1{ 1.2f,-3.9f,2.5f };
 	Vector3 v2{ 2.8f,0.4f,-1.3f };
 
+	Sphere sphere_ = {
+		{0.0f,0.0f,0.0f},
+		{0.3f}
+	};
 
-	Sphere sphere_1 = {
+	Plane plane_ = {
+		{0.0f,1.0f,0.0f},
+		{0.0f}
+	};
+	/*Sphere sphere_1 = {
 		{0.5f,0.0f,0.0f},
 		{0.1f}
 	};
@@ -158,7 +188,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sphere sphere_2 = {
 		{0.0f,0.0f,0.0f},
 		{0.3f}
-	};
+	};*/
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -179,23 +209,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector3 cross = Cross(v1, v2);
 
 		if (keys[DIK_W]) {
-			sphere_2.center_.z += 0.05f;
+			plane_.normal_.z += 0.05f;
 		}
 		if (keys[DIK_S]) {
-			sphere_2.center_.z -= 0.05f;
+			plane_.normal_.z -= 0.05f;
 		}
 		if (keys[DIK_D]) {
-			sphere_2.center_.x += 0.05f;
+			plane_.normal_.x += 0.05f;
 		}
 		if (keys[DIK_A]) {
-			sphere_2.center_.x -= 0.05f;
+			plane_.normal_.x -= 0.05f;
 		}
 		if (keys[DIK_UPARROW]) {
-			sphere_2.center_.y += 0.05f;
+			plane_.distanse_ += 0.05f;
 		}
 		if (keys[DIK_DOWNARROW]) {
-			sphere_2.center_.y -= 0.05f;
+			plane_.distanse_ -= 0.05f;
 		}
+		plane_.normal_ = Normalize(plane_.normal_);
 		rotate.y += 0.02f;
 		mat4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 		mat4x4 cameraMatrix = MakeAffineMatrix(cameraScale, cameraRotate, cameraTranslate);
@@ -220,9 +251,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//Vector3 end = Transform(Transform((segment.origin + segment.diff), viewProjectMatrix),viewportMatrix);
 
 
-		ImGui::Begin("sphere_2");
+		/*ImGui::Begin("sphere_2");
 		ImGui::DragFloat3("CameraTranslate", &sphere_2.center_.x, 0.01f);
-		ImGui::End();
+		ImGui::End();*/
 
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
@@ -235,20 +266,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		
-		if (IsCollision(sphere_1, sphere_2)) {
+		DrawGrid(viewProjectMatrix, viewportMatrix);
+		/*if (IsCollision(sphere_1, sphere_2)) {
 			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, RED);
 		}
 		else {
 			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, BLACK);
 		}
-		DrawSphere(sphere_2, viewProjectMatrix, viewportMatrix, BLACK);
+		DrawSphere(sphere_2, viewProjectMatrix, viewportMatrix, BLACK);*/
+		if (IsCollision(sphere_, plane_)) {
+			DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, RED);
+		}
+		else {
+			DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, BLACK);
+		}
+		//DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, BLACK);
+		DrawPlane(plane_, viewProjectMatrix, viewportMatrix, BLACK);
 		//DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix, RED);
 		//DrawSphere(colosetPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
 
 		//Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y),WHITE);
-		
-		DrawGrid(viewProjectMatrix, viewportMatrix);
 		/// ↑描画処理ここまで
 		///
 

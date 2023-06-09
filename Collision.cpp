@@ -11,3 +11,11 @@ bool IsCollision(const Sphere& s1, const Sphere& s2)
 	}
 	return false;
 }
+
+bool IsCollision(const Sphere& sphere, const Plane& plane) {
+	float k = Dot(plane.normal_, sphere.center_) - plane.distanse_;
+	if (std::abs(k) <= sphere.radius_) {
+		return true;
+	}
+	return false;
+}

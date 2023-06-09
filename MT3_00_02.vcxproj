@@ -146,6 +146,7 @@
     <ClInclude Include="mat4x4.h" />
     <ClInclude Include="Matrix33 .h" />
     <ClInclude Include="MyMath.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>

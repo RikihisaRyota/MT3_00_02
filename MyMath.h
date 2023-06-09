@@ -47,7 +47,6 @@ mat4x4 MakeViewportMatrix(float left, float top, float width, float height, floa
 Vector3 operator* (const mat4x4& mat, const Vector3& v);
 
 //内積
-
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
 
 float Dot(const Vector3& a, const Vector3& b);
@@ -58,7 +57,7 @@ float Dot(const Vec2& a, const Vec2& b);
 
 float Length(const Vec2& a, const Vec2& b);
 
-//クロス積
+//外積
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
 
 //-オーバーロード
@@ -75,3 +74,7 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 
 // 最近接点
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+
+Vector3 Perpendicular(const Vector3& vector);
+
+Vector3 Normalize(const Vector3& vector);

@@ -326,3 +326,21 @@ Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 	Vector3 proj = Project(point - segment.origin, segment.diff);
 	return segment.origin + proj;
 }
+
+Vector3 Perpendicular(const Vector3& vector) {
+	if (vector.x != 0.0f || vector.y != 0.0f) {
+		return { -vector.y,vector.x,0.0f };
+	}
+	return { 0.0f ,-vector.z,vector.y};
+}
+
+Vector3 Normalize(const Vector3& vector)
+{
+	Vector3 tmp = vector;
+	float length = Length(tmp);
+	assert(length != 0.0f);
+	tmp.x/= length;
+	tmp.y /= length;
+	tmp.z /= length;
+	return tmp;
+}
