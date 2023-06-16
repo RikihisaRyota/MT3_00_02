@@ -168,9 +168,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	kLocalvertices[1] = { -0.5f,0.0f,0.0f };
 	kLocalvertices[2] = { 0.0f,1.0f,0.0f };
 
-	Vector3 v1{ 1.2f,-3.9f,2.5f };
-	Vector3 v2{ 2.8f,0.4f,-1.3f };
-
 	Sphere sphere_ = {
 		{0.0f,0.0f,0.0f},
 		{0.3f}
@@ -180,16 +177,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{0.0f,1.0f,0.0f},
 		{0.0f}
 	};
-	/*Sphere sphere_1 = {
-		{0.5f,0.0f,0.0f},
-		{0.1f}
-	};
-
-	Sphere sphere_2 = {
-		{0.0f,0.0f,0.0f},
-		{0.3f}
-	};*/
-
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
@@ -206,7 +193,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-		Vector3 cross = Cross(v1, v2);
 
 		if (keys[DIK_W]) {
 			plane_.normal_.z += 0.05f;
@@ -241,19 +227,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		mat4x4 viewProjectMatrix = Mul(viewMatrix, projectionMatrix);
-		//Vector3 project = Project((point - segment.origin), segment.diff);
-		//Vector3 closestPoint = ClosestPoint(point,segment);
-
-		//Sphere pointSphere{ point,0.01f };// 1cmの球を描画
-		//Sphere colosetPointSphere{ closestPoint ,0.01f };
-
-		//Vector3 start = Transform(Transform(segment.origin, viewProjectMatrix),viewportMatrix);
-		//Vector3 end = Transform(Transform((segment.origin + segment.diff), viewProjectMatrix),viewportMatrix);
-
-
-		/*ImGui::Begin("sphere_2");
-		ImGui::DragFloat3("CameraTranslate", &sphere_2.center_.x, 0.01f);
-		ImGui::End();*/
 
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
@@ -267,25 +240,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		/*if (IsCollision(sphere_1, sphere_2)) {
-			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, RED);
+		if (IsCollision(plane_,segment)) {
+			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
+			Vector3 start = Transform(ndcVertex, viewportMatrix);
+			ndcVertex = Transform(segment.diff, Mul(viewMatrix, projectionMatrix));
+			Vector3 end = Transform(ndcVertex, viewportMatrix);
+			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), RED);
 		}
 		else {
-			DrawSphere(sphere_1, viewProjectMatrix, viewportMatrix, BLACK);
+			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
+			Vector3 start = Transform(ndcVertex, viewportMatrix);
+			ndcVertex = Transform(segment.diff, Mul(viewMatrix, projectionMatrix));
+			Vector3 end = Transform(ndcVertex, viewportMatrix);
+			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), WHITE);
 		}
-		DrawSphere(sphere_2, viewProjectMatrix, viewportMatrix, BLACK);*/
-		if (IsCollision(sphere_, plane_)) {
-			DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, RED);
-		}
-		else {
-			DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, BLACK);
-		}
-		//DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, BLACK);
 		DrawPlane(plane_, viewProjectMatrix, viewportMatrix, BLACK);
-		//DrawSphere(pointSphere, viewProjectMatrix, viewportMatrix, RED);
-		//DrawSphere(colosetPointSphere, viewProjectMatrix, viewportMatrix, BLACK);
-
-		//Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y),WHITE);
 		/// ↑描画処理ここまで
 		///
 
