@@ -52,7 +52,7 @@ bool IsCollision(const Plane& plane, const Ray& ray) {
 bool IsCollision(const Plane& plane, const Line& line) {
 	// 垂直判定
 	float d = Dot(plane.normal_, line.diff);
-	// 平行だったら
+	// 直線
 	if (d == 0.0f) {
 		return false;
 	}

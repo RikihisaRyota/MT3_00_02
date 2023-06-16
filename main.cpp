@@ -232,6 +232,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
+
+		ImGui::Begin("segment");
+		ImGui::DragFloat3("diff", &segment.diff.x, 0.01f);
+		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
+		ImGui::End();
 		///
 		/// ↑更新処理ここまで
 		///
