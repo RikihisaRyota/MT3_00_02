@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "mat4x4.h"
 #include "Sphere.h"
+#include "Triangle.h"
 #include "Plane.h"
 #include "MyMath.h"
 #include "Collision.h"
@@ -144,6 +145,76 @@ void DrawPlane(const Plane& plane, const mat4x4& viewProjeectionMatrix, const ma
 	Novice::DrawLine(static_cast<int>(points[1].x), static_cast<int>(points[1].y), static_cast<int>(points[3].x), static_cast<int>(points[3].y), color);
 }
 
+void DrawTriangle(const Triangle& triangle, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+	Vector3 ndc_a = Transform(triangle.vertices[0], viewProjectionMatrix);
+	Vector3 screen_a = Transform(ndc_a, viewPortMatrix);
+	Vector3 ndc_b = Transform(triangle.vertices[1], viewProjectionMatrix);
+	Vector3 screen_b = Transform(ndc_b, viewPortMatrix);
+	Vector3 ndc_c = Transform(triangle.vertices[2], viewProjectionMatrix);
+	Vector3 screen_c = Transform(ndc_c, viewPortMatrix);
+	Novice::DrawTriangle(static_cast<int>(screen_a.x), static_cast<int>(screen_a.y), static_cast<int>(screen_b.x), static_cast<int>(screen_b.y), static_cast<int>(screen_c.x), static_cast<int>(screen_c.y), color, kFillModeWireFrame);
+}
+
+void DrawAABB(const AABB& aabb, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+#pragma region 下の4点
+	// 下、左下
+	Vector3 bLB_ndc = Transform(aabb.min, viewProjectionMatrix);
+	Vector3 bLB_screen = Transform(bLB_ndc, viewPortMatrix);
+	// 下、左上
+	Vector3 bLT_ndc = Transform(Vector3(aabb.min.x, aabb.min.y, aabb.max.z), viewProjectionMatrix);
+	Vector3 bLT_screen = Transform(bLT_ndc, viewPortMatrix);
+	// 下、右下
+	Vector3 bRB_ndc = Transform(Vector3(aabb.max.x, aabb.min.y, aabb.min.z), viewProjectionMatrix);
+	Vector3 bRB_screen = Transform(bRB_ndc, viewPortMatrix);
+	// 下、右上
+	Vector3 bRT_ndc = Transform(Vector3(aabb.max.x, aabb.min.y, aabb.max.z), viewProjectionMatrix);
+	Vector3 bRT_screen = Transform(bRT_ndc, viewPortMatrix);
+#pragma endregion 下の4点
+#pragma region 上の4点
+	// 上、左下
+	Vector3 tLB_ndc = Transform(Vector3(aabb.min.x, aabb.max.y, aabb.min.z), viewProjectionMatrix);
+	Vector3 tLB_screen = Transform(tLB_ndc, viewPortMatrix);
+	// 上、左上
+	Vector3 tLT_ndc = Transform(Vector3(aabb.min.x, aabb.max.y, aabb.max.z), viewProjectionMatrix);
+	Vector3 tLT_screen = Transform(tLT_ndc, viewPortMatrix);
+	// 上、右下
+	Vector3 tRB_ndc = Transform(Vector3(aabb.max.x, aabb.max.y, aabb.min.z), viewProjectionMatrix);
+	Vector3 tRB_screen = Transform(tRB_ndc, viewPortMatrix);
+	// 上、右上
+	Vector3 tRT_ndc = Transform(aabb.max, viewProjectionMatrix);
+	Vector3 tRT_screen = Transform(tRT_ndc, viewPortMatrix);
+#pragma endregion 上の4点
+#pragma region 下の4辺
+	// 下、下辺
+	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), color);
+	// 下、左辺
+	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), color);
+	// 下、上辺
+	Novice::DrawLine(static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), color);
+	// 下、右辺
+	Novice::DrawLine(static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), color);
+#pragma endregion 下の4辺
+#pragma region 上の4辺
+	// 上、下辺
+	Novice::DrawLine(static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
+	// 上、左辺
+	Novice::DrawLine(static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), color);
+	// 上、上辺
+	Novice::DrawLine(static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), color);
+	// 上、右辺
+	Novice::DrawLine(static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
+#pragma endregion 上の4辺
+#pragma region 縦の4辺
+	// 下、左下と上、左下
+	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), color);
+	// 下、左上と上、左上
+	Novice::DrawLine(static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), color);
+	// 下、右下と上、右下
+	Novice::DrawLine(static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
+	// 下、右上と上、右上
+	Novice::DrawLine(static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), color);
+#pragma endregion 縦の4辺
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -159,7 +230,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
-	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f} };
+	Segment segment{ {0.0f,0.3f,-0.5f},{0.3f,0.4f,0.5f} };
+	int32_t segmentColor = 0;
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
 
@@ -177,6 +249,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{0.0f,1.0f,0.0f},
 		{0.0f}
 	};
+
+	Triangle triangle = {
+		{
+		{-1.0f,0.0f,0.0f},
+		{0.0f,1.0f,0.0f},
+		{1.0f,0.0f,0.0f},
+		}
+	};
+
+	AABB aabb_1{
+		.min{-0.5f,-0.5f,-0.5f},
+		.max{0.0f,0.0f,0.0f},
+	};
+	int32_t aabb_1Color = WHITE;
+
+	AABB aabb_2{
+		.min{0.2f,0.2f,0.2f},
+		.max{1.0f,1.0f,1.0f},
+	};
+	int32_t aabb_2Color = WHITE;
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
@@ -237,6 +329,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("diff", &segment.diff.x, 0.01f);
 		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
 		ImGui::End();
+
+		ImGui::Begin("aabb1");
+		ImGui::DragFloat3("1_min", &aabb_1.min.x, 0.01f);
+		ImGui::DragFloat3("1_max", &aabb_1.max.x, 0.01f);
+		ImGui::DragFloat3("2_min", &aabb_2.min.x, 0.01f);
+		ImGui::DragFloat3("2_max", &aabb_2.max.x, 0.01f);
+		ImGui::End();
+
+		aabb_1 = AABBAssignment(aabb_1);
+		aabb_2 = AABBAssignment(aabb_2);
 		///
 		/// ↑更新処理ここまで
 		///
@@ -245,21 +347,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(plane_,segment)) {
-			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
-			Vector3 start = Transform(ndcVertex, viewportMatrix);
-			ndcVertex = Transform(segment.diff, Mul(viewMatrix, projectionMatrix));
-			Vector3 end = Transform(ndcVertex, viewportMatrix);
-			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), RED);
+		/*if (IsCollision(triangle, segment)) {
+			segmentColor = RED;
 		}
 		else {
+			segmentColor = WHITE;
+		}
+		{
 			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
 			Vector3 start = Transform(ndcVertex, viewportMatrix);
 			ndcVertex = Transform(segment.diff, Mul(viewMatrix, projectionMatrix));
 			Vector3 end = Transform(ndcVertex, viewportMatrix);
-			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), WHITE);
+			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), segmentColor);
 		}
-		DrawPlane(plane_, viewProjectMatrix, viewportMatrix, BLACK);
+		DrawTriangle(triangle, viewProjectMatrix, viewportMatrix, BLACK);*/
+		if (IsCollision(aabb_1, aabb_2)) {
+			aabb_1Color = RED;
+			aabb_2Color = RED;
+		}
+		else {
+			aabb_1Color = WHITE;
+			aabb_2Color = WHITE;
+		}
+		DrawAABB(aabb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);
+		DrawAABB(aabb_2, viewProjectMatrix, viewportMatrix, aabb_2Color);
 		/// ↑描画処理ここまで
 		///
 

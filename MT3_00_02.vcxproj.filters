@@ -131,5 +131,7 @@
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="AABB.h" />
   </ItemGroup>
 </Project>

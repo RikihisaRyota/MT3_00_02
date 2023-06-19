@@ -344,3 +344,32 @@ Vector3 Normalize(const Vector3& vector)
 	tmp.z /= length;
 	return tmp;
 }
+
+bool Intersection(Vector3& intersection,const Vector3& normal, const Segment& segment) {
+	// 垂直判定
+	float d = Dot(normal, segment.diff);
+	// 平行だったら
+	if (d == 0.0f) {
+		return false;
+	}
+	// 線分と平面の当たり判定
+	//float t = (plane.distanse_ - Dot(segment.origin,normal)) / d;
+	// 線分と平面の当たったポイント
+	intersection = segment.origin + d * segment.diff;
+	return true;
+}
+
+AABB AABBAssignment(const AABB& aabb) {
+	AABB result = aabb;
+	// x
+	result.min.x = (std::min)(result.min.x, result.max.x);
+	result.max.x = (std::max)(result.min.x, result.max.x);
+	// y
+	result.min.y = (std::min)(result.min.y, result.max.y);
+	result.max.y = (std::max)(result.min.y, result.max.y);
+	// z
+	result.min.z = (std::min)(result.min.z, result.max.z);
+	result.max.z = (std::max)(result.min.z, result.max.z);
+
+	return result;
+}
