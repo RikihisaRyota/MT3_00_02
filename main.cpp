@@ -333,12 +333,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::Begin("aabb1");
 		ImGui::DragFloat3("1_min", &aabb_1.min.x, 0.01f);
 		ImGui::DragFloat3("1_max", &aabb_1.max.x, 0.01f);
-		ImGui::DragFloat3("2_min", &aabb_2.min.x, 0.01f);
-		ImGui::DragFloat3("2_max", &aabb_2.max.x, 0.01f);
 		ImGui::End();
-
 		aabb_1 = AABBAssignment(aabb_1);
-		aabb_2 = AABBAssignment(aabb_2);
+		ImGui::Begin("sphere");
+		ImGui::DragFloat3("center", &sphere_.center_.x, 0.01f);
+		ImGui::DragFloat("radius", &sphere_.radius_, 0.01f);
+		ImGui::End();
 		///
 		/// ↑更新処理ここまで
 		///
@@ -361,16 +361,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), segmentColor);
 		}
 		DrawTriangle(triangle, viewProjectMatrix, viewportMatrix, BLACK);*/
-		if (IsCollision(aabb_1, aabb_2)) {
+		if (IsCollision(aabb_1, sphere_)) {
 			aabb_1Color = RED;
-			aabb_2Color = RED;
 		}
 		else {
 			aabb_1Color = WHITE;
-			aabb_2Color = WHITE;
 		}
 		DrawAABB(aabb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);
-		DrawAABB(aabb_2, viewProjectMatrix, viewportMatrix, aabb_2Color);
+		DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, WHITE);
 		/// ↑描画処理ここまで
 		///
 

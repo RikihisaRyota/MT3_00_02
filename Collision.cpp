@@ -1,6 +1,9 @@
 #include "Collision.h"
-#include "MyMath.h"
+
+#include <algorithm>
 #include <math.h>
+
+#include "MyMath.h"
 
 bool IsCollision(const Sphere& s1, const Sphere& s2) {
 	// 2つの球の中心間の距離を求める
@@ -105,6 +108,23 @@ bool IsCollision(const AABB& a, const AABB& b) {
 		(a.min.y <= b.max.y && a.max.y >= b.min.y) && // y軸
 		(a.min.z <= b.max.z && a.max.z >= b.min.z)    // z軸
 		) {
+		// 衝突
+		return true;
+	}
+	return false;
+}
+
+bool IsCollision(const AABB& aabb, const Sphere& sphere) {
+	// 最近接点を求める
+	Vector3 clossPoint{
+		std::clamp(sphere.center_.x,aabb.min.x,aabb.max.x),
+		std::clamp(sphere.center_.y,aabb.min.y,aabb.max.y),
+		std::clamp(sphere.center_.z,aabb.min.z,aabb.max.z),
+	};
+	// 最近接点と球の中心との距離を求める
+	float distance = Length(clossPoint - sphere.center_);
+	// 衝突が半径よりも小さければ衝突
+	if (distance <= sphere.radius_) {
 		// 衝突
 		return true;
 	}
