@@ -345,15 +345,15 @@ Vector3 Normalize(const Vector3& vector)
 	return tmp;
 }
 
-bool Intersection(Vector3& intersection,const Vector3& normal, const Segment& segment) {
+bool Intersection(Vector3& intersection, const Plane& plane, const Segment& segment) {
 	// 垂直判定
-	float d = Dot(normal, segment.diff);
+	float d = Dot(plane.normal_, segment.diff);
 	// 平行だったら
 	if (d == 0.0f) {
 		return false;
 	}
 	// 線分と平面の当たり判定
-	//float t = (plane.distanse_ - Dot(segment.origin,normal)) / d;
+	float t = (plane.distanse_ - Dot(segment.origin, plane.normal_)) / d;
 	// 線分と平面の当たったポイント
 	intersection = segment.origin + d * segment.diff;
 	return true;

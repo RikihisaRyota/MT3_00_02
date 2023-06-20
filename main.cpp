@@ -230,8 +230,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
-	Segment segment{ {-2.0f,-1.0f,0.0f},{3.0f,2.0f,2.0f}};
-	int32_t segmentColor = 0;
+	Segment segment{ {-0.7f,0.3f,0.0f},{2.0f,-0.5f,0.0f}};
+	int32_t segmentColor = WHITE;
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
 
@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	AABB aabb_1{
 		.min{-0.5f,-0.5f,-0.5f},
-		.max{0.0f,0.0f,0.0f},
+		.max{0.0f,0.5f,0.5f},
 	};
 	int32_t aabb_1Color = WHITE;
 
@@ -330,15 +330,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
 		ImGui::End();
 
-		/*ImGui::Begin("aabb1");
+		ImGui::Begin("aabb1");
 		ImGui::DragFloat3("1_min", &aabb_1.min.x, 0.01f);
 		ImGui::DragFloat3("1_max", &aabb_1.max.x, 0.01f);
 		ImGui::End();
 		aabb_1 = AABBAssignment(aabb_1);
-		ImGui::Begin("sphere");
-		ImGui::DragFloat3("center", &sphere_.center_.x, 0.01f);
-		ImGui::DragFloat("radius", &sphere_.radius_, 0.01f);
-		ImGui::End();*/
 		///
 		/// ↑更新処理ここまで
 		///
@@ -347,11 +343,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(triangle, segment)) {
-			segmentColor = RED;
+		if (IsCollision(aabb_1, segment)) {
+			aabb_1Color = RED;
 		}
 		else {
-			segmentColor = WHITE;
+			aabb_1Color = WHITE;
 		}
 		{
 			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
@@ -360,7 +356,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Vector3 end = Transform(ndcVertex, viewportMatrix);
 			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), segmentColor);
 		}
-		DrawTriangle(triangle, viewProjectMatrix, viewportMatrix, BLACK);
+		DrawAABB(aabb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);
 		/// ↑描画処理ここまで
 		///
 

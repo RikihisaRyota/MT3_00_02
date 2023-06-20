@@ -1,10 +1,11 @@
 #pragma once
+#include "AABB.h"
 #include "mat4x4.h"
 #include "Vector3.h"
 #include "Line.h"
 #include "Vec2.h"
 #include "Line.h"
-#include "AABB.h"
+#include "Plane.h"
 
 //1,行列の加法
 mat4x4 Add(const mat4x4& m1, const mat4x4& m2);
@@ -82,7 +83,7 @@ Vector3 Perpendicular(const Vector3& vector);
 Vector3 Normalize(const Vector3& vector);
 
 // 平面と線分の当たった場所
-bool Intersection(Vector3& intersection, const Vector3& normal, const Segment& segment);
+bool Intersection(Vector3& intersection, const Plane& plane, const Segment& segment);
 
 // AABBに値を代入
 AABB AABBAssignment(const AABB& aabb);

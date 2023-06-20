@@ -130,3 +130,29 @@ bool IsCollision(const AABB& aabb, const Sphere& sphere) {
 	}
 	return false;
 }
+
+bool IsCollision(const AABB& aabb, const Segment& segment) {
+	// X軸
+	float txMin = (aabb.min.x - segment.origin.x) / segment.diff.x;
+	float txMax = (aabb.max.x - segment.origin.x) / segment.diff.x;
+	float tNearX = std::min(txMin, txMax);
+	float tFarX = std::max(txMin, txMax);
+	// Y軸
+	float tyMin = (aabb.min.y - segment.origin.y) / segment.diff.y;
+	float tyMax = (aabb.max.y - segment.origin.y) / segment.diff.y;
+	float tNearY = std::min(tyMin, tyMax);
+	float tFarY = std::max(tyMin, tyMax);
+	// Z軸
+	float tzMin = (aabb.min.z - segment.origin.z) / segment.diff.z;
+	float tzMax = (aabb.max.z - segment.origin.z) / segment.diff.z;
+	float tNearZ = std::min(tzMin, tzMax);
+	float tFarZ = std::max(tzMin, tzMax);
+	// AABBと衝突点（貫通点）のtが小さい方
+	float tMin = std::max(std::max(tNearX, tNearY), tNearZ);
+	// AABBと衝突点（貫通点）のtが大きい方
+	float tMax = std::min(std::min(tFarX, tFarY), tFarZ);
+	if (tMin <= tMax) {
+		return true;
+	}
+	return false;
+}
