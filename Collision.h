@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "Triangle.h"
 #include "AABB.h"
+#include "OBB.h"
 // 球と球
 bool IsCollision(const Sphere& s1, const Sphere& s2);
 // 球と平面
@@ -22,3 +23,5 @@ bool IsCollision(const AABB& a, const AABB& b);
 bool IsCollision(const AABB& aabb, const Sphere& sphere);
 // AABBと線分
 bool IsCollision(const AABB& aabb, const Segment& segment);
+// OBBと球
+bool IsCollision(const OBB& obb, const Sphere& sphere);

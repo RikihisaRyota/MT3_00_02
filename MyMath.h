@@ -6,6 +6,7 @@
 #include "Vec2.h"
 #include "Line.h"
 #include "Plane.h"
+#include "OBB.h"
 
 //1,行列の加法
 mat4x4 Add(const mat4x4& m1, const mat4x4& m2);
@@ -49,6 +50,13 @@ mat4x4 MakeViewportMatrix(float left, float top, float width, float height, floa
 //matrix4x4*Vector3
 Vector3 operator* (const mat4x4& mat, const Vector3& v);
 
+Vector3 operator- (const Vector3& v1);
+// -オーバーロード
+Vector3 operator-(const Vector3& v, const Vector3& v2);
+
+// -オーバーロード
+Vector3 operator*(float v, const Vector3& v2);
+
 //内積
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
 
@@ -62,15 +70,6 @@ float Length(const Vec2& a, const Vec2& b);
 
 //外積
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
-
-//-オーバーロード
-Vector3 operator-(const Vector3& v, const Vector3& v2);
-
-//-オーバーロード
-Vector3 operator*(const Vector3& v, const Vector3& v2);
-
-//-オーバーロード
-Vector3 operator*(float v, const Vector3& v2);
 
 // 正射影ベクトル
 Vector3 Project(const Vector3& v1, const Vector3& v2);
@@ -87,3 +86,11 @@ bool Intersection(Vector3& intersection, const Plane& plane, const Segment& segm
 
 // AABBに値を代入
 AABB AABBAssignment(const AABB& aabb);
+
+// OBBの回転角度の抽出
+OBB OBBSetRotate(const OBB& Obb, const Vector3& rotate);
+
+// OBBの平行移動
+mat4x4 OBBMakeWorldMatrix(const OBB& obb);
+
+mat4x4 SetRotate(const Vector3(&array)[3]);

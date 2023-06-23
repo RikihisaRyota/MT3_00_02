@@ -5,6 +5,7 @@
 #include "Sphere.h"
 #include "Triangle.h"
 #include "Plane.h"
+#include "OBB.h"
 #include "MyMath.h"
 #include "Collision.h"
 
@@ -33,6 +34,21 @@ void VectorScreenPrintf(int x, int y, const Vector3& vec, const char* label) {
 	Novice::ScreenPrintf((x + 1) * kColumnWidth, y, "%6.02f", vec.y);
 	Novice::ScreenPrintf((x + 2) * kColumnWidth, y, "%6.02f", vec.z);
 	Novice::ScreenPrintf((x + 3) * kColumnWidth, y, "%s", label);
+}
+
+void DrawLine(const Vector3& v1, const Vector3& v2, const mat4x4& viewProjectionMatrix, const mat4x4& viewportMatrix, int32_t color) {
+
+	Vector3 ndcVertex_Start = Transform(v1, viewProjectionMatrix);
+	Vector3 screenVertices_Start = Transform(ndcVertex_Start, viewportMatrix);
+
+	Vector3 ndcVertex_End = Transform(v2, viewProjectionMatrix);
+	Vector3 screenVertices_End = Transform(ndcVertex_End, viewportMatrix);
+
+	Novice::DrawLine(static_cast<int>(screenVertices_Start.x), static_cast<int>(screenVertices_Start.y), static_cast<int>(screenVertices_End.x), static_cast<int>(screenVertices_End.y), color);
+}
+
+void DrawLine(const Vector3& v1, const Vector3& v2, uint32_t color) {
+	Novice::DrawLine(static_cast<int>(v1.x), static_cast<int>(v1.y), static_cast<int>(v2.x), static_cast<int>(v2.y), color);
 }
 
 void DrawGrid(const mat4x4& viewProjectionMatrix, const mat4x4& viewportMatrix) {
@@ -156,64 +172,51 @@ void DrawTriangle(const Triangle& triangle, const mat4x4& viewProjectionMatrix, 
 }
 
 void DrawAABB(const AABB& aabb, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
-#pragma region 下の4点
-	// 下、左下
-	Vector3 bLB_ndc = Transform(aabb.min, viewProjectionMatrix);
-	Vector3 bLB_screen = Transform(bLB_ndc, viewPortMatrix);
-	// 下、左上
-	Vector3 bLT_ndc = Transform(Vector3(aabb.min.x, aabb.min.y, aabb.max.z), viewProjectionMatrix);
-	Vector3 bLT_screen = Transform(bLT_ndc, viewPortMatrix);
-	// 下、右下
-	Vector3 bRB_ndc = Transform(Vector3(aabb.max.x, aabb.min.y, aabb.min.z), viewProjectionMatrix);
-	Vector3 bRB_screen = Transform(bRB_ndc, viewPortMatrix);
-	// 下、右上
-	Vector3 bRT_ndc = Transform(Vector3(aabb.max.x, aabb.min.y, aabb.max.z), viewProjectionMatrix);
-	Vector3 bRT_screen = Transform(bRT_ndc, viewPortMatrix);
-#pragma endregion 下の4点
-#pragma region 上の4点
-	// 上、左下
-	Vector3 tLB_ndc = Transform(Vector3(aabb.min.x, aabb.max.y, aabb.min.z), viewProjectionMatrix);
-	Vector3 tLB_screen = Transform(tLB_ndc, viewPortMatrix);
-	// 上、左上
-	Vector3 tLT_ndc = Transform(Vector3(aabb.min.x, aabb.max.y, aabb.max.z), viewProjectionMatrix);
-	Vector3 tLT_screen = Transform(tLT_ndc, viewPortMatrix);
-	// 上、右下
-	Vector3 tRB_ndc = Transform(Vector3(aabb.max.x, aabb.max.y, aabb.min.z), viewProjectionMatrix);
-	Vector3 tRB_screen = Transform(tRB_ndc, viewPortMatrix);
-	// 上、右上
-	Vector3 tRT_ndc = Transform(aabb.max, viewProjectionMatrix);
-	Vector3 tRT_screen = Transform(tRT_ndc, viewPortMatrix);
-#pragma endregion 上の4点
-#pragma region 下の4辺
-	// 下、下辺
-	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), color);
-	// 下、左辺
-	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), color);
-	// 下、上辺
-	Novice::DrawLine(static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), color);
-	// 下、右辺
-	Novice::DrawLine(static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), color);
-#pragma endregion 下の4辺
-#pragma region 上の4辺
-	// 上、下辺
-	Novice::DrawLine(static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
-	// 上、左辺
-	Novice::DrawLine(static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), color);
-	// 上、上辺
-	Novice::DrawLine(static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), color);
-	// 上、右辺
-	Novice::DrawLine(static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
-#pragma endregion 上の4辺
-#pragma region 縦の4辺
-	// 下、左下と上、左下
-	Novice::DrawLine(static_cast<int>(bLB_screen.x), static_cast<int>(bLB_screen.y), static_cast<int>(tLB_screen.x), static_cast<int>(tLB_screen.y), color);
-	// 下、左上と上、左上
-	Novice::DrawLine(static_cast<int>(bLT_screen.x), static_cast<int>(bLT_screen.y), static_cast<int>(tLT_screen.x), static_cast<int>(tLT_screen.y), color);
-	// 下、右下と上、右下
-	Novice::DrawLine(static_cast<int>(bRB_screen.x), static_cast<int>(bRB_screen.y), static_cast<int>(tRB_screen.x), static_cast<int>(tRB_screen.y), color);
-	// 下、右上と上、右上
-	Novice::DrawLine(static_cast<int>(bRT_screen.x), static_cast<int>(bRT_screen.y), static_cast<int>(tRT_screen.x), static_cast<int>(tRT_screen.y), color);
-#pragma endregion 縦の4辺
+	Vector3 vertices[] = {
+		{aabb.min},
+		{aabb.max.x,aabb.min.y,aabb.min.z},
+		{aabb.max.x,aabb.min.y,aabb.max.z},
+		{aabb.min.x,aabb.min.y,aabb.max.z},
+		{aabb.min.x,aabb.max.y,aabb.min.z},
+		{aabb.max.x,aabb.max.y,aabb.min.z},
+		{aabb.max},
+		{aabb.min.x,aabb.max.y,aabb.max.z},
+	};
+	for (int i = 0; i < 4; i++) {
+		int j = (i + 1) % 4;
+		DrawLine(vertices[i], vertices[j], color);
+		DrawLine(vertices[i], vertices[i + 4], viewProjectionMatrix, viewPortMatrix, color);
+		DrawLine(vertices[i + 4], vertices[j + 4], viewProjectionMatrix, viewPortMatrix, color);
+	}
+}
+
+void DrawOBB(const OBB& obb, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+
+	Vector3 vertices[] = {
+		{-obb.size},
+		{+obb.size.x,-obb.size.y,-obb.size.z},
+		{+obb.size.x,-obb.size.y,+obb.size.z},
+		{-obb.size.x,-obb.size.y,+obb.size.z},
+		{-obb.size.x,+obb.size.y,-obb.size.z},
+		{+obb.size.x,+obb.size.y,-obb.size.z},
+		{ obb.size},
+		{-obb.size.x,+obb.size.y,+obb.size.z},
+	};
+
+	mat4x4 rotateMatrix = SetRotate(obb.orientations);
+	for (auto& vertex : vertices) {
+		vertex = Transform(vertex, rotateMatrix);
+		vertex = vertex + obb.center;
+		Vector3 ndc = Transform(vertex, viewProjectionMatrix);
+		vertex = Transform(ndc, viewPortMatrix);
+	}
+
+	for (int i = 0; i < 4; i++) {
+		int j = (i + 1) % 4;
+		DrawLine(vertices[i], vertices[j], color);
+		DrawLine(vertices[i], vertices[i + 4], color);
+		DrawLine(vertices[i + 4], vertices[j + 4], color);
+	}
 }
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -222,15 +225,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
 
-	Vector3 scale{ 1.0f,1.0f,1.0f };
-	Vector3 rotate{ 0.0f,0.0f,0.0f };
-	Vector3 translate{ 0.0f,0.0f,0.0f };
-	Vector3 camera{ 0.0f,0.0f,1.0f };
 	Vector3 cameraScale{ 1.0f,1.0f,1.0f };
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
-	Segment segment{ {-0.7f,0.3f,0.0f},{2.0f,-0.5f,0.0f}};
+	Segment segment{ {-0.7f,0.3f,0.0f},{2.0f,-0.5f,0.0f} };
 	int32_t segmentColor = WHITE;
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
@@ -242,7 +241,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Sphere sphere_ = {
 		{0.0f,0.0f,0.0f},
-		{0.3f}
+		{0.5f}
 	};
 
 	Plane plane_ = {
@@ -258,9 +257,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 	};
 
+	Vector3 rotate{ 0.0f,0.0f,0.0f };
+
+	OBB obb{
+		.center{-1.0f,0.0f,0.0f},
+		.orientations = {
+		{1.0f,0.0f,0.0f},
+		{0.0f,1.0f,0.0f},
+		{0.0f,0.0f,1.0f},},
+		.size{0.5f,0.5f,0.5f},
+	};
+
 	AABB aabb_1{
-		.min{-0.5f,-0.5f,-0.5f},
-		.max{0.0f,0.5f,0.5f},
+		.min{-0.5f, -0.5f, -0.5f},
+		.max{0.0f, 0.5f, 0.5f},
 	};
 	int32_t aabb_1Color = WHITE;
 
@@ -285,56 +295,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
-
-		if (keys[DIK_W]) {
-			plane_.normal_.z += 0.05f;
-		}
-		if (keys[DIK_S]) {
-			plane_.normal_.z -= 0.05f;
-		}
-		if (keys[DIK_D]) {
-			plane_.normal_.x += 0.05f;
-		}
-		if (keys[DIK_A]) {
-			plane_.normal_.x -= 0.05f;
-		}
-		if (keys[DIK_UPARROW]) {
-			plane_.distanse_ += 0.05f;
-		}
-		if (keys[DIK_DOWNARROW]) {
-			plane_.distanse_ -= 0.05f;
-		}
-		plane_.normal_ = Normalize(plane_.normal_);
-		rotate.y += 0.02f;
-		mat4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 		mat4x4 cameraMatrix = MakeAffineMatrix(cameraScale, cameraRotate, cameraTranslate);
 		mat4x4 viewMatrix = Inverse(cameraMatrix);
 		mat4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
-		mat4x4 worldViewProjectionMatrix = Mul(worldMatrix, Mul(viewMatrix, projectionMatrix));
 		mat4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 		Vector3 screenVertices[3];
 		for (uint32_t i = 0; i < 3; ++i) {
-			Vector3 ndcVertex = Transform(kLocalvertices[i], worldViewProjectionMatrix);
+			Vector3 ndcVertex = Transform(kLocalvertices[i], Mul(viewMatrix, projectionMatrix));
 			screenVertices[i] = Transform(ndcVertex, viewportMatrix);
 		}
 
 		mat4x4 viewProjectMatrix = Mul(viewMatrix, projectionMatrix);
+
+
+		// 回転行列から軸を抽出
 
 		ImGui::Begin("window");
 		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
 
-		ImGui::Begin("segment");
-		ImGui::DragFloat3("diff", &segment.diff.x, 0.01f);
-		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
+		ImGui::Begin("aabb1");
+		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
+		ImGui::DragFloat3("center", &obb.center.x, 0.01f);
 		ImGui::End();
 
-		ImGui::Begin("aabb1");
-		ImGui::DragFloat3("1_min", &aabb_1.min.x, 0.01f);
-		ImGui::DragFloat3("1_max", &aabb_1.max.x, 0.01f);
-		ImGui::End();
-		aabb_1 = AABBAssignment(aabb_1);
+		obb = OBBSetRotate(obb, rotate);
+
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -343,20 +331,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(aabb_1, segment)) {
+		if (IsCollision(obb, sphere_)) {
 			aabb_1Color = RED;
 		}
 		else {
 			aabb_1Color = WHITE;
 		}
-		{
-			Vector3 ndcVertex = Transform(segment.origin, Mul(viewMatrix, projectionMatrix));
-			Vector3 start = Transform(ndcVertex, viewportMatrix);
-			ndcVertex = Transform(segment.diff, Mul(viewMatrix, projectionMatrix));
-			Vector3 end = Transform(ndcVertex, viewportMatrix);
-			Novice::DrawLine(static_cast<int>(start.x), static_cast<int>(start.y), static_cast<int>(end.x), static_cast<int>(end.y), segmentColor);
-		}
-		DrawAABB(aabb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);
+		DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, WHITE);
+		DrawOBB(obb, viewProjectMatrix, viewportMatrix, aabb_1Color);
 		/// ↑描画処理ここまで
 		///
 

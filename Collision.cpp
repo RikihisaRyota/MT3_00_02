@@ -156,3 +156,24 @@ bool IsCollision(const AABB& aabb, const Segment& segment) {
 	}
 	return false;
 }
+
+bool IsCollision(const OBB& obb, const Sphere& sphere) {
+	mat4x4 OBBWorldMatrix = OBBMakeWorldMatrix(obb);
+
+	Vector3 centerInOBBLocalSpace =
+		Transform(sphere.center_, Inverse(OBBWorldMatrix));
+
+	AABB aabbOBBLocal{
+		.min = -obb.size,
+		.max = obb.size
+	};
+	Sphere sphereOBBLocal{
+		centerInOBBLocalSpace,
+		sphere.radius_
+	};
+	// ローカル空間で衝突判定
+	if (IsCollision(aabbOBBLocal, sphereOBBLocal)) {
+		return true;
+	}
+	return false;
+}

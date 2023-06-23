@@ -266,6 +266,12 @@ Vector3 operator*(const mat4x4& matrix, const Vector3& vector)
 	return result;
 }
 
+Vector3 operator-(const Vector3& v1) {
+	return {-v1.x,-v1.y,-v1.z};
+}
+
+
+
 Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
 	return { (v1.x - v2.x), (v1.y - v2.y), (v1.z - v2.z) };
 }
@@ -300,11 +306,7 @@ Vector3 operator-(const Vector3& v, const Vector3& v2) {
 }
 
 Vector3 operator*(const Vector3& v, const Vector3& v2) {
-	Vector3 tmp(0.0f, 0.0f, 0.0f);
-	tmp.x = v.x * v2.x;
-	tmp.y = v.y * v2.y;
-	tmp.z = v.z * v2.z;
-	return tmp;
+	return { v.x * v2.x ,v.y * v2.y , v.z * v2.z };
 }
 
 Vector3 operator*(float v, const Vector3& v2)
@@ -372,4 +374,60 @@ AABB AABBAssignment(const AABB& aabb) {
 	result.max.z = (std::max)(result.min.z, result.max.z);
 
 	return result;
+}
+
+OBB OBBSetRotate(const OBB& Obb,const Vector3& rotate) {
+	// 回転行列を生成
+	mat4x4 rotateMatrix = Mul(MakeRotateXMatrix(rotate.x), Mul(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
+	
+	// 回転行列から軸を抽出
+	OBB obb = Obb;
+
+	obb.orientations[0].x = rotateMatrix.m[0][0];
+	obb.orientations[0].y = rotateMatrix.m[0][1];
+	obb.orientations[0].z = rotateMatrix.m[0][2]; 
+
+	obb.orientations[1].x = rotateMatrix.m[1][0];
+	obb.orientations[1].y = rotateMatrix.m[1][1];
+	obb.orientations[1].z = rotateMatrix.m[1][2];
+
+	obb.orientations[2].x = rotateMatrix.m[2][0];
+	obb.orientations[2].y = rotateMatrix.m[2][1];
+	obb.orientations[2].z = rotateMatrix.m[2][2];
+
+	return obb;
+}
+
+mat4x4 OBBMakeWorldMatrix(const OBB& obb) {
+	mat4x4 result;
+	result.m[0][0] = obb.orientations[0].x;
+	result.m[0][1] = obb.orientations[0].y;
+	result.m[0][2] = obb.orientations[0].z;
+
+	result.m[1][0] = obb.orientations[1].x;
+	result.m[1][1] = obb.orientations[1].y;
+	result.m[1][2] = obb.orientations[1].z;
+
+	result.m[2][0] = obb.orientations[2].x;
+	result.m[2][1] = obb.orientations[2].y;
+	result.m[2][2] = obb.orientations[2].z;
+
+	result.m[3][0] = obb.center.x;
+	result.m[3][1] = obb.center.y;
+	result.m[3][2] = obb.center.z;
+	return result;
+}
+
+mat4x4 SetRotate(const Vector3(&array)[3]) {
+	mat4x4 rotateMatrix;
+	rotateMatrix.m[0][0] = array[0].x;
+	rotateMatrix.m[0][1] = array[0].y;
+	rotateMatrix.m[0][2] = array[0].z;
+	rotateMatrix.m[1][0] = array[1].x;
+	rotateMatrix.m[1][1] = array[1].y;
+	rotateMatrix.m[1][2] = array[1].z;
+	rotateMatrix.m[2][0] = array[2].x;
+	rotateMatrix.m[2][1] = array[2].y;
+	rotateMatrix.m[2][2] = array[2].z;
+	return rotateMatrix;
 }
