@@ -244,13 +244,13 @@ bool IsCollision(const AABB& aabb, const Segment& segment) {
 	float tMin = std::max(std::max(tNearX, tNearY), tNearZ);
 	// AABBと衝突点（貫通点）のtが大きい方
 	float tMax = std::min(std::min(tFarX, tFarY), tFarZ);
-	if (!tMin > 0.0f && !tMax < 1.0f) {
+	if ((tMin < 0.0f && tMax < 0.0f) || (tMin > 1.0f && tMax > 1.0f)) {
 		return false;
 	}
-	if (tMin <= tMax) {
-		return true;
+	if (tMin > tMax) {
+		return false;
 	}
-	return false;
+	return true;
 }
 
 bool IsCollision(const AABB& aabb, const Ray& ray) {
@@ -274,13 +274,13 @@ bool IsCollision(const AABB& aabb, const Ray& ray) {
 	float tMin = std::max(std::max(tNearX, tNearY), tNearZ);
 	// AABBと衝突点（貫通点）のtが大きい方
 	float tMax = std::min(std::min(tFarX, tFarY), tFarZ);
-	if (!tMin > 0.0f) {
+	if ((tMin < 0.0f && tMax < 0.0f)) {
 		return false;
 	}
-	if (tMin <= tMax) {
-		return true;
+	if (tMin > tMax) {
+		return false;
 	}
-	return false;
+	return true;
 }
 
 bool IsCollision(const AABB& aabb, const Line& line) {
@@ -304,13 +304,10 @@ bool IsCollision(const AABB& aabb, const Line& line) {
 	float tMin = std::max(std::max(tNearX, tNearY), tNearZ);
 	// AABBと衝突点（貫通点）のtが大きい方
 	float tMax = std::min(std::min(tFarX, tFarY), tFarZ);
-	if (tMin == 0.0f) {
+	if (tMin > tMax) {
 		return false;
 	}
-	if (tMin <= tMax) {
-		return true;
-	}
-	return false;
+	return true;
 }
 
 bool IsCollision(const OBB& obb, const Sphere& sphere) {
@@ -335,10 +332,50 @@ bool IsCollision(const OBB& obb, const Sphere& sphere) {
 }
 
 bool IsCollision(const OBB& obb, const Segment& segment) {
+	mat4x4 ObbWorldMatrix = OBBMakeWorldMatrix(obb);
+	mat4x4 ObbInverse = Inverse(ObbWorldMatrix);
+
+
+	Vector3 localOrigin = Transform(segment.origin, ObbInverse);
+	Vector3 localEnd = Transform(segment.origin + segment.diff, ObbInverse);
+
+	AABB localAABB{
+		{-obb.size.x,-obb.size.y,-obb.size.z},
+		{+obb.size.x,+obb.size.y,+obb.size.z},
+	};
+
+	Segment localSegment{
+		.origin{localOrigin},
+		.diff{localEnd - localOrigin},
+	};
+	// ローカル空間で当たり判定
+	if (IsCollision(localAABB, localSegment)) {
+		return true;
+	}
 	return false;
 }
 
 bool IsCollision(const OBB& obb, const Ray& ray) {
+	mat4x4 ObbWorldMatrix = OBBMakeWorldMatrix(obb);
+	mat4x4 ObbInverse = Inverse(ObbWorldMatrix);
+
+
+	Vector3 localOrigin = Transform(ray.origin, ObbInverse);
+	Vector3 localEnd = Transform(ray.origin + ray.diff, ObbInverse);
+
+	AABB localAABB{
+		{-obb.size.x,-obb.size.y,-obb.size.z},
+		{+obb.size.x,+obb.size.y,+obb.size.z},
+	};
+
+	Ray localRay{
+		.origin{localOrigin},
+		.diff{localEnd - localOrigin},
+	};
+	// ローカル空間で当たり判定
+	if (IsCollision(localAABB, localRay)) {
+		return true;
+	}
 	return false;
 }
 
@@ -355,12 +392,12 @@ bool IsCollision(const OBB& obb, const Line& line) {
 		{+obb.size.x,+obb.size.y,+obb.size.z},
 	};
 
-	Segment localSegment{
+	Line localLine{
 		.origin{localOrigin},
 		.diff{localEnd - localOrigin},
 	};
 	// ローカル空間で当たり判定
-	if (IsCollision(localAABB, localSegment)) {
+	if (IsCollision(localAABB, localLine)) {
 		return true;
 	}
 	return false;

@@ -327,8 +327,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		obb = OBBSetRotate(obb, rotate);
 
 		ImGui::Begin("line");
-		ImGui::DragFloat3("origin", &line.origin.x, 0.01f);
-		ImGui::DragFloat3("diff", &line.diff.x, 0.01f);
+		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("diff", &segment.diff.x, 0.01f);
 		ImGui::End();
 
 		///
@@ -339,13 +339,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(obb, line)) {
+		if (IsCollision(obb, segment)) {
 			aabb_1Color = RED;
 		}
 		else {
 			aabb_1Color = WHITE;
 		}
-		DrawLine(line.origin, line.diff, viewProjectMatrix, viewportMatrix, lineColor);
+		DrawLine(segment.origin, segment.diff, viewProjectMatrix, viewportMatrix, lineColor);
 		DrawOBB(obb, viewProjectMatrix, viewportMatrix, aabb_1Color);
 		/// ↑描画処理ここまで
 		///
