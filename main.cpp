@@ -184,7 +184,7 @@ void DrawAABB(const AABB& aabb, const mat4x4& viewProjectionMatrix, const mat4x4
 	};
 	for (int i = 0; i < 4; i++) {
 		int j = (i + 1) % 4;
-		DrawLine(vertices[i], vertices[j], color);
+		DrawLine(vertices[i], vertices[j], viewProjectionMatrix, viewPortMatrix,color);
 		DrawLine(vertices[i], vertices[i + 4], viewProjectionMatrix, viewPortMatrix, color);
 		DrawLine(vertices[i + 4], vertices[j + 4], viewProjectionMatrix, viewPortMatrix, color);
 	}
@@ -229,8 +229,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
-	Segment segment{ {-0.7f,0.3f,0.0f},{2.0f,-0.5f,0.0f} };
+	Segment segment{ {0.0f,0.3f,-0.3f},{0.0f,0.3f,1.0f} };
 	int32_t segmentColor = WHITE;
+	Line line{ {0.0f,0.3f,-0.3f},{0.0f,0.3f,1.0f} };
+	int32_t lineColor = WHITE;
+	Ray ray{ {0.0f,0.3f,-0.3f},{0.0f,0.3f,0.3f} };
+	int32_t rayColor = WHITE;
 	Vector3 point{ -1.5f,0.6f,0.6f };
 
 
@@ -270,7 +274,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	AABB aabb_1{
 		.min{-0.5f, -0.5f, -0.5f},
-		.max{0.0f, 0.5f, 0.5f},
+		.max{0.5f, 0.5f, 0.5f},
 	};
 	int32_t aabb_1Color = WHITE;
 
@@ -315,13 +319,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
 
-		ImGui::Begin("aabb1");
+		ImGui::Begin("obb");
 		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
 		ImGui::DragFloat3("center", &obb.center.x, 0.01f);
 		ImGui::End();
 
 		obb = OBBSetRotate(obb, rotate);
 
+		ImGui::Begin("line");
+		ImGui::DragFloat3("origin", &line.origin.x, 0.01f);
+		ImGui::DragFloat3("diff", &line.diff.x, 0.01f);
+		ImGui::End();
 
 		///
 		/// ↑更新処理ここまで
@@ -331,13 +339,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(obb, sphere_)) {
+		if (IsCollision(obb, line)) {
 			aabb_1Color = RED;
 		}
 		else {
 			aabb_1Color = WHITE;
 		}
-		DrawSphere(sphere_, viewProjectMatrix, viewportMatrix, WHITE);
+		DrawLine(line.origin, line.diff, viewProjectMatrix, viewportMatrix, lineColor);
 		DrawOBB(obb, viewProjectMatrix, viewportMatrix, aabb_1Color);
 		/// ↑描画処理ここまで
 		///
