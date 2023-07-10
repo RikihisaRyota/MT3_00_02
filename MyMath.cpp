@@ -1,5 +1,7 @@
 #include "MyMath.h"
 
+#include "imgui.h"
+
 mat4x4 Add(const mat4x4& m1, const mat4x4& m2)
 {
 	mat4x4 mat;
@@ -430,4 +432,60 @@ mat4x4 SetRotate(const Vector3(&array)[3]) {
 	rotateMatrix.m[2][1] = array[2].y;
 	rotateMatrix.m[2][2] = array[2].z;
 	return rotateMatrix;
+}
+
+void OBBIndex(const OBB& obb, std::vector<Vector3>& output_vertices) {
+	std::vector<Vector3> vertices = {
+		{-obb.size},
+		{+obb.size.x,-obb.size.y,-obb.size.z},
+		{+obb.size.x,-obb.size.y,+obb.size.z},
+		{-obb.size.x,-obb.size.y,+obb.size.z},
+		{-obb.size.x,+obb.size.y,-obb.size.z},
+		{+obb.size.x,+obb.size.y,-obb.size.z},
+		{ obb.size},
+		{-obb.size.x,+obb.size.y,+obb.size.z},
+	};
+
+	mat4x4 rotateMatrix = SetRotate(obb.orientations);
+	for (auto& vertex : vertices) {
+		vertex = Transform(vertex, rotateMatrix);
+		vertex = vertex + obb.center;
+	}
+	output_vertices = vertices;
+}
+
+bool SeparationAxis(const Vector3 axis,const OBB obb_1, const OBB obb_2) {
+	// 分離軸
+	Vector3 L = axis;
+	// 頂点数
+	const int32_t kIndex = 8;
+	// 頂点格納用配列
+	std::vector<Vector3> vertices_1;
+	std::vector<Vector3> vertices_2;
+	// 配列に頂点を代入
+	OBBIndex(obb_1, vertices_1);
+	OBBIndex(obb_2, vertices_2);
+	// 距離を格納
+	float min_1 = Dot(vertices_1[0], L);
+	float max_1 = min_1;
+	float min_2 = Dot(vertices_2[0], L);
+	float max_2 = min_2;
+	for (size_t i = 1; i < kIndex; i++) {
+		float dot_1 = Dot(vertices_1[i], L);
+		float dot_2 = Dot(vertices_2[i], L);
+		// min/max比べる
+		min_1 = std::min(min_1, dot_1);
+		max_1 = std::max(max_1, dot_1);
+		min_2 = std::min(min_2, dot_2);
+		max_2 = std::max(max_2, dot_2);
+	}
+	float L1 = max_1 - min_1;
+	float L2 = max_2 - min_2;
+	float sumSpan = L1 + L2;
+	float longSpan = (std::max)(max_1, max_2) - (std::min)(min_1, min_2);
+	// 分離軸である
+	if (sumSpan < longSpan) {
+		return true;
+	}
+	return false;
 }

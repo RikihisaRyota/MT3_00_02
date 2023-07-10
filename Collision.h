@@ -39,3 +39,5 @@ bool IsCollision(const OBB& obb, const Segment& segment);
 bool IsCollision(const OBB& obb, const Ray& ray);
 // OBBと直線
 bool IsCollision(const OBB& obb, const Line& line);
+// OBBとOBB
+bool IsCollision(const OBB& obb1, const OBB& obb2);

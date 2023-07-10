@@ -1,4 +1,7 @@
 #pragma once
+
+#include <vector>
+
 #include "AABB.h"
 #include "mat4x4.h"
 #include "Vector3.h"
@@ -94,3 +97,8 @@ OBB OBBSetRotate(const OBB& Obb, const Vector3& rotate);
 mat4x4 OBBMakeWorldMatrix(const OBB& obb);
 
 mat4x4 SetRotate(const Vector3(&array)[3]);
+
+// OBBの頂点
+void OBBIndex(const OBB& obb,std::vector<Vector3>& output_vertices);
+// 分離軸
+bool SeparationAxis(const Vector3 axis, const OBB obb_1, const OBB obb_2);

@@ -84,7 +84,7 @@ bool IsCollision(const Triangle& triangle, const Segment& segment) {
 		.normal_{normal},
 		.distanse_{distance}
 	};
-	if (!IsCollision(tmp,segment)) {
+	if (!IsCollision(tmp, segment)) {
 		return false;
 	}
 	Vector3 intersectionPoint = segment.origin + (t * segment.diff);
@@ -401,4 +401,25 @@ bool IsCollision(const OBB& obb, const Line& line) {
 		return true;
 	}
 	return false;
+}
+
+bool IsCollision(const OBB& obb_1, const OBB& obb_2) {
+	const int32_t kAxis = 3;
+	for (size_t i = 0; i < kAxis; i++) {
+		// obb_1の軸
+		if (SeparationAxis(obb_1.orientations[i], obb_1, obb_2)) {
+			return false;
+		}
+		// obb_2の軸
+		if (SeparationAxis(obb_2.orientations[i], obb_1, obb_2)) {
+			return false;
+		}
+		for (size_t j = 0; j < kAxis; j++) {
+			Vector3 tmp = Cross(obb_1.orientations[i], obb_2.orientations[j]);
+			if (SeparationAxis(obb_1.orientations[i], obb_1, obb_2)) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
