@@ -121,3 +121,6 @@ Vector3 Slerp(const Vector3& start, const Vector3& end, float t);
 // CatmullRom
 Vector2 QuadraticCatmullRom(const Vector2& Position0, const Vector2& Position1, const Vector2& Position2, const Vector2& Position3, float t);
 Vector3 CubicCatmullRom(const Vector3& Position0, const Vector3& Position1, const Vector3& Position2, const Vector3& Position3, float t);
+
+// 平行移動取得
+Vector3 GetTranslates(const mat4x4 mat);

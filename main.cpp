@@ -331,18 +331,33 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	};
 	int32_t aabb_2Color = WHITE;
 
-	/*Vector3 controlPoints[3] = {
-		{-0.8f,0.58f,1.0f},
-		{1.76f,1.0f,-0.3f},
-		{0.94f,-0.7f,2.3f},
-	};*/
-
 	Vector3 controlPoints[4] = {
 		{-0.8f,0.58f,1.0f},
 		{1.76f,1.0f,-0.3f},
 		{0.94f,-0.7f,2.3f},
 		{-0.53f,-0.26f,0.15f},
 	};
+
+	Vector3 translates[3] = {
+		{0.2f,1.0f,0.0f},
+		{0.4f,0.0f,0.0f},
+		{0.3f,0.0f,0.0f},
+	};
+
+	Vector3 rotates[3] = {
+		{0.0f,0.0f,-6.8f},
+		{0.0f,0.0f,-1.8f},
+		{0.0f,0.0f,0.0f},
+	};
+
+	Vector3 scales[3] = {
+		{1.0f,1.0f,1.0f},
+		{1.0f,1.0f,1.0f},
+		{1.0f,1.0f,1.0f},
+	};
+	mat4x4 shoulder = MakeAffineMatrix(scales[0],rotates[0],translates[0]);
+	mat4x4 elbow = MakeAffineMatrix(scales[1],rotates[1],translates[1]);
+	mat4x4 hand= MakeAffineMatrix(scales[2],rotates[2],translates[2]);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -372,7 +387,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		mat4x4 viewProjectMatrix = Mul(viewMatrix, projectionMatrix);
 
-
 		// 回転行列から軸を抽出
 
 		ImGui::Begin("window");
@@ -388,11 +402,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
 
 		ImGui::Begin("point");
-		ImGui::DragFloat3("0", &controlPoints[0].x, 0.01f);
-		ImGui::DragFloat3("1", &controlPoints[1].x, 0.01f);
-		ImGui::DragFloat3("2", &controlPoints[2].x, 0.01f);
-		ImGui::DragFloat3("3", &controlPoints[3].x, 0.01f);
+		ImGui::DragFloat3("scales[0]", &scales[0].x, 0.01f);
+		ImGui::DragFloat3("rotates[0]", &rotates[0].x, 0.01f);
+		ImGui::DragFloat3("translates[0]", &translates[0].x, 0.01f);
+		ImGui::DragFloat3("scales[1]", &scales[1].x, 0.01f);
+		ImGui::DragFloat3("rotates[1]", &rotates[1].x, 0.01f);
+		ImGui::DragFloat3("translates[1]", &translates[1].x, 0.01f);
+		ImGui::DragFloat3("scales[2]", &scales[2].x, 0.01f);
+		ImGui::DragFloat3("rotates[2]", &rotates[2].x, 0.01f);
+		ImGui::DragFloat3("translates[2]", &translates[2].x, 0.01f);
 		ImGui::End();
+
+		shoulder = MakeAffineMatrix(scales[0], rotates[0], translates[0]);
+		elbow = Mul(MakeAffineMatrix(scales[1], rotates[1], translates[1]), shoulder);
+		hand = Mul(MakeAffineMatrix(scales[2], rotates[2], translates[2]), elbow);
 
 		///
 		/// ↑更新処理ここまで
@@ -402,19 +425,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		if (IsCollision(obb_0, obb_1)) {
+		/*if (IsCollision(obb_0, obb_1)) {
 			aabb_1Color = RED;
 		}
 		else {
 			aabb_1Color = WHITE;
-		}
-		DrawCatmullRom(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3],viewProjectMatrix, viewportMatrix, lineColor);
-		for (size_t i = 0; i < 4; i++) {
-			DrawSphere(Sphere(controlPoints[i],0.01f), viewProjectMatrix, viewportMatrix, lineColor);
-		}
-		/*DrawLine(segment.origin, segment.diff, viewProjectMatrix, viewportMatrix, lineColor);
-		DrawOBB(obb_0, viewProjectMatrix, viewportMatrix, aabb_1Color);
-		DrawOBB(obb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);*/
+		}*/
+		DrawSphere(Sphere(GetTranslates(shoulder), 0.05f), viewProjectMatrix, viewportMatrix, RED);
+		DrawSphere(Sphere(GetTranslates(elbow), 0.05f), viewProjectMatrix, viewportMatrix, GREEN);
+		DrawSphere(Sphere(GetTranslates(hand), 0.05f), viewProjectMatrix, viewportMatrix, BLUE);
+		DrawLine(GetTranslates(shoulder), GetTranslates(elbow), viewProjectMatrix, viewportMatrix,WHITE);
+		DrawLine(GetTranslates(elbow), GetTranslates(hand), viewProjectMatrix, viewportMatrix,WHITE);
 		/// ↑描画処理ここまで
 		///
 

@@ -614,3 +614,7 @@ Vector3 CubicCatmullRom(const Vector3& Position0, const Vector3& Position1, cons
 
 	return Result;
 }
+
+Vector3 GetTranslates(const mat4x4 mat) {
+	return Vector3(mat.m[3][0], mat.m[3][1], mat.m[3][2]);
+}
