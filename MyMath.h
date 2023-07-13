@@ -119,5 +119,5 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 Vector2 Slerp(const Vector2& start, const Vector2& end, float t);
 Vector3 Slerp(const Vector3& start, const Vector3& end, float t);
 // CatmullRom
-Vector2 CatmullRom(const Vector2& Position0, const Vector2& Position1, const Vector2& Position2, const Vector2& Position3, float t);
-Vector3 CatmullRom(const Vector3& Position0, const Vector3& Position1, const Vector3& Position2, const Vector3& Position3, float t);
+Vector2 QuadraticCatmullRom(const Vector2& Position0, const Vector2& Position1, const Vector2& Position2, const Vector2& Position3, float t);
+Vector3 CubicCatmullRom(const Vector3& Position0, const Vector3& Position1, const Vector3& Position2, const Vector3& Position3, float t);

@@ -220,11 +220,38 @@ void DrawOBB(const OBB& obb, const mat4x4& viewProjectionMatrix, const mat4x4& v
 }
 
 void DrawBezier(const Vector3& v1, const Vector3& v2, const Vector3& v3,const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
-	const int32_t DivisionCount = 100;
+	const int32_t DivisionCount = 16;
 	for (float i = 1.0f; i < DivisionCount; i++) {
 		DrawLine(
 			CubicBezier(v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)), 
 			CubicBezier(v1, v2, v3, static_cast<float>(i) / static_cast<float>(DivisionCount)),
+			viewProjectionMatrix,
+			viewPortMatrix,
+			color);
+	}
+}
+
+void DrawCatmullRom(const Vector3 v0, const Vector3& v1, const Vector3& v2, const Vector3& v3, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+	const int32_t DivisionCount = 100;
+	for (float i = 1.0f; i < DivisionCount; i++) {
+		// p0,p1間
+		DrawLine(
+			CubicCatmullRom(v0, v0, v1, v2, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)),
+			CubicCatmullRom(v0, v0, v1, v2, static_cast<float>(i) / static_cast<float>(DivisionCount)),
+			viewProjectionMatrix,
+			viewPortMatrix,
+			color);
+		// p1,p2間
+		DrawLine(
+			CubicCatmullRom(v0, v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)),
+			CubicCatmullRom(v0, v1, v2, v3,  static_cast<float>(i) / static_cast<float>(DivisionCount)),
+			viewProjectionMatrix,
+			viewPortMatrix,
+			color);
+		// p2,p3間
+		DrawLine(
+			CubicCatmullRom(v1, v2, v3, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)),
+			CubicCatmullRom(v1, v2, v3, v3, static_cast<float>(i) / static_cast<float>(DivisionCount)),
 			viewProjectionMatrix,
 			viewPortMatrix,
 			color);
@@ -304,10 +331,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	};
 	int32_t aabb_2Color = WHITE;
 
-	Vector3 controlPoints[3] = {
+	/*Vector3 controlPoints[3] = {
 		{-0.8f,0.58f,1.0f},
 		{1.76f,1.0f,-0.3f},
 		{0.94f,-0.7f,2.3f},
+	};*/
+
+	Vector3 controlPoints[4] = {
+		{-0.8f,0.58f,1.0f},
+		{1.76f,1.0f,-0.3f},
+		{0.94f,-0.7f,2.3f},
+		{-0.53f,-0.26f,0.15f},
 	};
 
 	// キー入力結果を受け取る箱
@@ -357,6 +391,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("0", &controlPoints[0].x, 0.01f);
 		ImGui::DragFloat3("1", &controlPoints[1].x, 0.01f);
 		ImGui::DragFloat3("2", &controlPoints[2].x, 0.01f);
+		ImGui::DragFloat3("3", &controlPoints[3].x, 0.01f);
 		ImGui::End();
 
 		///
@@ -373,8 +408,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			aabb_1Color = WHITE;
 		}
-		DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectMatrix, viewportMatrix, lineColor);
-		for (size_t i = 0; i < 3; i++) {
+		DrawCatmullRom(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3],viewProjectMatrix, viewportMatrix, lineColor);
+		for (size_t i = 0; i < 4; i++) {
 			DrawSphere(Sphere(controlPoints[i],0.01f), viewProjectMatrix, viewportMatrix, lineColor);
 		}
 		/*DrawLine(segment.origin, segment.diff, viewProjectMatrix, viewportMatrix, lineColor);
