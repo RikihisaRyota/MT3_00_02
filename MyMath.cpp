@@ -316,6 +316,10 @@ Vector3 operator*(float v, const Vector3& v2)
 	return Vector3(v2.x * v, v2.y * v, v2.z * v);
 }
 
+Vector2 operator*(float v, const Vector2& v2) {
+	return Vector2(v2.x * v, v2.y * v);
+}
+
 Vector3 Project(const Vector3& v1, const Vector3& V2)
 {
 	Vector3 tmp;
@@ -488,4 +492,125 @@ bool SeparationAxis(const Vector3 axis,const OBB obb_1, const OBB obb_2) {
 		return true;
 	}
 	return false;
+}
+
+Vector2 QuadraticBezier(const Vector2& controlPoint0, const Vector2& controlPoint1, const Vector2& controlPoint2, float t) {
+	// 制御点p0,p1を線形補間
+	Vector2 p0p1 = Lerp(controlPoint0, controlPoint1,t);
+	// 制御点p1,p2線形補間
+	Vector2 p1p2 = Lerp(controlPoint1, controlPoint2, t);
+	// 補間点p0p1,p1p2をさらに線形補間
+	return Lerp(p0p1, p1p2, t);
+}
+
+Vector3 CubicBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, float t) {
+	// 制御点p0,p1を線形補間
+	Vector3 p0p1 = Lerp(controlPoint0, controlPoint1, t);
+	// 制御点p1,p2線形補間
+	Vector3 p1p2 = Lerp(controlPoint1, controlPoint2, t);
+	// 補間点p0p1,p1p2をさらに線形補間
+	return Lerp(p0p1, p1p2, t);
+}
+
+float Lerp(float start, float end, float t) {
+	return start + t * (end - start);
+}
+
+Vector2 Lerp(const Vector2& start, const Vector2& end, float t) {
+	return start + t * (end - start);
+}
+
+Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
+	return start + t * (end - start);
+}
+
+Vector2 Slerp(const Vector2& v1, const Vector2& v2, float t) {
+	// 2つのベクトルの内積を計算
+	const float cosTheta = v1.x * v2.x + v1.y * v2.y;
+
+	// 角度（ラジアン）を計算
+	const float theta = std::acos(cosTheta);
+
+	// sin(x) / sin(theta) を計算するために、thetaが0に近い場合は線形補間を行う
+	if (std::abs(theta) < 0.0001f) {
+		return v1 * (1.0f - t) + v2 * t;
+	}
+
+	// sin(theta) を計算
+	const float sinTheta = std::sin(theta);
+
+	// 0除算による計算不可を回避するため、sinThetaが0に近い場合は線形補間を行う
+	if (std::abs(sinTheta) < 0.0001f) {
+		return v1 * (1.0f - t) + v2 * t;
+	}
+
+	// パラメータによって補間するベクトルを計算
+	const float w1 = std::sin((1.0f - t) * theta) / sinTheta;
+	const float w2 = std::sin(t * theta) / sinTheta;
+	const Vector2 result = v1 * w1 + v2 * w2;
+
+	return result;
+}
+
+Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
+	// 2つのベクトルの内積を計算
+	const float cosTheta = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+
+	// 角度（ラジアン）を計算
+	const float theta = std::acos(cosTheta);
+
+	// sin(x) / sin(theta) を計算するために、thetaが0に近い場合は線形補間を行う
+	if (std::abs(theta) < 0.0001f) {
+		return v1 * (1.0f - t) + v2 * t;
+	}
+
+	// sin(theta) を計算
+	const float sinTheta = std::sin(theta);
+
+	// 0除算による計算不可を回避するため、sinThetaが0に近い場合は線形補間を行う
+	if (std::abs(sinTheta) < 0.0001f) {
+		return v1 * (1.0f - t) + v2 * t;
+	}
+
+	// パラメータによって補間するベクトルを計算
+	const float w1 = std::sin((1.0f - t) * theta) / sinTheta;
+	const float w2 = std::sin(t * theta) / sinTheta;
+	const Vector3 result = v1 * w1 + v2 * w2;
+
+	return result;
+}
+
+Vector2 CatmullRom(const Vector2& Position0, const Vector2& Position1, const Vector2& Position2, const Vector2& Position3, float t) {
+	Vector2 Result;
+
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float P0 = -t3 + 2.0f * t2 - t;
+	float P1 = 3.0f * t3 - 5.0f * t2 + 2.0f;
+	float P2 = -3.0f * t3 + 4.0f * t2 + t;
+	float P3 = t3 - t2;
+
+	Result.x = (P0 * Position0.x + P1 * Position1.x + P2 * Position2.x + P3 * Position3.x) * 0.5f;
+	Result.y = (P0 * Position0.y + P1 * Position1.y + P2 * Position2.y + P3 * Position3.y) * 0.5f;
+
+	return Result;
+}
+
+Vector3 CatmullRom(const Vector3& Position0, const Vector3& Position1, const Vector3& Position2, const Vector3& Position3, float t) {
+	Vector3 Result;
+
+	float t2 = t * t;
+	float t3 = t2 * t;
+
+	float P0 = -t3 + 2.0f * t2 - t;
+	float P1 = 3.0f * t3 - 5.0f * t2 + 2.0f;
+	float P2 = -3.0f * t3 + 4.0f * t2 + t;
+	float P3 = t3 - t2;
+
+	Result.x = (P0 * Position0.x + P1 * Position1.x + P2 * Position2.x + P3 * Position3.x) * 0.5f;
+	Result.y = (P0 * Position0.y + P1 * Position1.y + P2 * Position2.y + P3 * Position3.y) * 0.5f;
+	Result.z = (P0 * Position0.z + P1 * Position1.z + P2 * Position2.z + P3 * Position3.z) * 0.5f;
+
+	return Result;
 }

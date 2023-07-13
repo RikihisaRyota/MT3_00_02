@@ -106,7 +106,7 @@ void DrawGrid(const mat4x4& viewProjectionMatrix, const mat4x4& viewportMatrix) 
 
 void DrawSphere(const Sphere& sphere, const mat4x4& viewProjectionMatrix, const mat4x4& viewportMatrix, uint32_t color) {
 	// 分割数
-	const uint32_t kSubdivision = 30;
+	const uint32_t kSubdivision = 16;
 	// 経度分割1つ分の角度
 	const float kLonEvery = static_cast<float>(M_PI) * 2.0f / kSubdivision;;
 	// 緯度分割1つ分の角度
@@ -219,6 +219,18 @@ void DrawOBB(const OBB& obb, const mat4x4& viewProjectionMatrix, const mat4x4& v
 	}
 }
 
+void DrawBezier(const Vector3& v1, const Vector3& v2, const Vector3& v3,const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+	const int32_t DivisionCount = 100;
+	for (float i = 1.0f; i < DivisionCount; i++) {
+		DrawLine(
+			CubicBezier(v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)), 
+			CubicBezier(v1, v2, v3, static_cast<float>(i) / static_cast<float>(DivisionCount)),
+			viewProjectionMatrix,
+			viewPortMatrix,
+			color);
+	}
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -291,6 +303,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.max{1.0f,1.0f,1.0f},
 	};
 	int32_t aabb_2Color = WHITE;
+
+	Vector3 controlPoints[3] = {
+		{-0.8f,0.58f,1.0f},
+		{1.76f,1.0f,-0.3f},
+		{0.94f,-0.7f,2.3f},
+	};
+
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
@@ -327,16 +346,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
 
-		ImGui::Begin("obb");
+		/*ImGui::Begin("obb");
 		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
 		ImGui::DragFloat3("center", &obb_0.center.x, 0.01f);
 		ImGui::End();
 
-		obb_0 = OBBSetRotate(obb_0, rotate);
+		obb_0 = OBBSetRotate(obb_0, rotate);*/
 
-		ImGui::Begin("line");
-		ImGui::DragFloat3("origin", &segment.origin.x, 0.01f);
-		ImGui::DragFloat3("diff", &segment.diff.x, 0.01f);
+		ImGui::Begin("point");
+		ImGui::DragFloat3("0", &controlPoints[0].x, 0.01f);
+		ImGui::DragFloat3("1", &controlPoints[1].x, 0.01f);
+		ImGui::DragFloat3("2", &controlPoints[2].x, 0.01f);
 		ImGui::End();
 
 		///
@@ -353,9 +373,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			aabb_1Color = WHITE;
 		}
-		DrawLine(segment.origin, segment.diff, viewProjectMatrix, viewportMatrix, lineColor);
+		DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectMatrix, viewportMatrix, lineColor);
+		for (size_t i = 0; i < 3; i++) {
+			DrawSphere(Sphere(controlPoints[i],0.01f), viewProjectMatrix, viewportMatrix, lineColor);
+		}
+		/*DrawLine(segment.origin, segment.diff, viewProjectMatrix, viewportMatrix, lineColor);
 		DrawOBB(obb_0, viewProjectMatrix, viewportMatrix, aabb_1Color);
-		DrawOBB(obb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);
+		DrawOBB(obb_1, viewProjectMatrix, viewportMatrix, aabb_1Color);*/
 		/// ↑描画処理ここまで
 		///
 
