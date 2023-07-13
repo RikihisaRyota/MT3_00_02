@@ -52,16 +52,13 @@ mat4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, 
 mat4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 
 //matrix4x4*Vector3
+// -オーバーロード
 Vector3 operator* (const mat4x4& mat, const Vector3& v);
-
 Vector3 operator- (const Vector3& v1);
-// -オーバーロード
 Vector3 operator-(const Vector3& v, const Vector3& v2);
-
-// -オーバーロード
 Vector3 operator*(float v, const Vector3& v2);
-
 Vector2 operator*(float v, const Vector2& v2);
+mat4x4 operator*(const mat4x4& ma1, const mat4x4& mat2);
 
 //内積
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);

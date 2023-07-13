@@ -320,6 +320,10 @@ Vector2 operator*(float v, const Vector2& v2) {
 	return Vector2(v2.x * v, v2.y * v);
 }
 
+mat4x4 operator*(const mat4x4& mat1, const mat4x4& mat2) {
+	return Mul(mat1,mat2);
+}
+
 Vector3 Project(const Vector3& v1, const Vector3& V2)
 {
 	Vector3 tmp;
