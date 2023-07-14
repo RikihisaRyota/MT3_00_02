@@ -404,7 +404,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Vector3 force = restoringForce + dampingForce;
 			ball.acceleration_ = force / ball.mass_;
 		}
-		//ball.acceleration_ += kGravity;
+		ball.acceleration_ += kGravity;
 		ball.velocity_ += ball.acceleration_ * deltaTime;
 		ball.position_ += ball.velocity_ * deltaTime;
 		///
