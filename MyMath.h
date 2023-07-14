@@ -56,6 +56,8 @@ mat4x4 MakeViewportMatrix(float left, float top, float width, float height, floa
 Vector3 operator* (const mat4x4& mat, const Vector3& v);
 Vector3 operator- (const Vector3& v1);
 Vector3 operator-(const Vector3& v, const Vector3& v2);
+Vector3 operator/(const Vector3& v, float v2);
+Vector3& operator+=(Vector3& v, const Vector3& v2);
 Vector3 operator*(float v, const Vector3& v2);
 Vector2 operator*(float v, const Vector2& v2);
 mat4x4 operator*(const mat4x4& ma1, const mat4x4& mat2);

@@ -2,8 +2,7 @@
 
 #include "imgui.h"
 
-mat4x4 Add(const mat4x4& m1, const mat4x4& m2)
-{
+mat4x4 Add(const mat4x4& m1, const mat4x4& m2) {
 	mat4x4 mat;
 	mat.m[0][0] = m1.m[0][0] + m2.m[0][0], mat.m[0][1] = m1.m[0][1] + m2.m[0][1], mat.m[0][2] = m1.m[0][2] + m2.m[0][2], mat.m[0][3] = m1.m[0][3] + m2.m[0][3];
 	mat.m[1][0] = m1.m[1][0] + m2.m[1][0], mat.m[1][1] = m1.m[1][1] + m2.m[1][1], mat.m[1][2] = m1.m[1][2] + m2.m[1][2], mat.m[1][3] = m1.m[1][3] + m2.m[1][3];
@@ -12,8 +11,7 @@ mat4x4 Add(const mat4x4& m1, const mat4x4& m2)
 	return mat;
 }
 
-mat4x4 Sub(const mat4x4& m1, const mat4x4& m2)
-{
+mat4x4 Sub(const mat4x4& m1, const mat4x4& m2) {
 	mat4x4 mat;
 	mat.m[0][0] = m1.m[0][0] - m2.m[0][0], mat.m[0][1] = m1.m[0][1] - m2.m[0][1], mat.m[0][2] = m1.m[0][2] - m2.m[0][2], mat.m[0][3] = m1.m[0][3] - m2.m[0][3];
 	mat.m[1][0] = m1.m[1][0] - m2.m[1][0], mat.m[1][1] = m1.m[1][1] - m2.m[1][1], mat.m[1][2] = m1.m[1][2] - m2.m[1][2], mat.m[1][3] = m1.m[1][3] - m2.m[1][3];
@@ -22,8 +20,7 @@ mat4x4 Sub(const mat4x4& m1, const mat4x4& m2)
 	return mat;
 }
 
-mat4x4 Mul(const mat4x4& m1, const mat4x4& m2)
-{
+mat4x4 Mul(const mat4x4& m1, const mat4x4& m2) {
 	mat4x4 mat;
 	mat.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0],
 		mat.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1],
@@ -48,8 +45,7 @@ mat4x4 Mul(const mat4x4& m1, const mat4x4& m2)
 	return mat;
 }
 
-mat4x4 Mul(const float scaler, const mat4x4& m2)
-{
+mat4x4 Mul(const float scaler, const mat4x4& m2) {
 	mat4x4 mat;
 	mat.m[0][0] = scaler * m2.m[0][0], mat.m[0][1] = scaler * m2.m[0][1], mat.m[0][2] = scaler * m2.m[0][2], mat.m[0][3] = scaler * m2.m[0][3];
 	mat.m[1][0] = scaler * m2.m[1][0], mat.m[1][1] = scaler * m2.m[1][1], mat.m[1][2] = scaler * m2.m[1][2], mat.m[1][3] = scaler * m2.m[1][3];
@@ -58,8 +54,7 @@ mat4x4 Mul(const float scaler, const mat4x4& m2)
 	return mat;
 }
 
-mat4x4 Inverse(const mat4x4& m)
-{
+mat4x4 Inverse(const mat4x4& m) {
 	float A;
 	A = m.m[0][0] * m.m[1][1] * m.m[2][2] * m.m[3][3] + m.m[0][0] * m.m[1][2] * m.m[2][3] * m.m[3][1] + m.m[0][0] * m.m[1][3] * m.m[2][1] * m.m[3][2]
 		- m.m[0][0] * m.m[1][3] * m.m[2][2] * m.m[3][1] - m.m[0][0] * m.m[1][2] * m.m[2][1] * m.m[3][3] - m.m[0][0] * m.m[1][1] * m.m[2][3] * m.m[3][2]
@@ -125,8 +120,7 @@ mat4x4 Inverse(const mat4x4& m)
 	return tmp;
 }
 
-mat4x4 Transpose(const mat4x4& m)
-{
+mat4x4 Transpose(const mat4x4& m) {
 	mat4x4 mat;
 	mat.m[0][0] = m.m[0][0], mat.m[0][1] = m.m[1][0], mat.m[0][2] = m.m[2][0], mat.m[0][3] = m.m[3][0];
 	mat.m[1][0] = m.m[0][1], mat.m[1][1] = m.m[1][1], mat.m[1][2] = m.m[2][1], mat.m[1][3] = m.m[3][1];
@@ -135,8 +129,7 @@ mat4x4 Transpose(const mat4x4& m)
 	return mat;
 }
 
-mat4x4 MakeIdentity4x4()
-{
+mat4x4 MakeIdentity4x4() {
 	mat4x4 mat;
 	mat.m[0][0] = 1.0f, mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = 1.0f, mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -145,8 +138,7 @@ mat4x4 MakeIdentity4x4()
 	return mat;
 }
 
-mat4x4 MakeTranslateMatrix(const Vector3& translate)
-{
+mat4x4 MakeTranslateMatrix(const Vector3& translate) {
 	mat4x4 tmp;
 	tmp.m[0][0] = 1.0f, tmp.m[0][1] = 0.0f, tmp.m[0][2] = 0.0f, tmp.m[0][3] = 0.0f;
 	tmp.m[1][0] = 0.0f, tmp.m[1][1] = 1.0f, tmp.m[1][2] = 0.0f, tmp.m[1][3] = 0.0f;
@@ -155,8 +147,7 @@ mat4x4 MakeTranslateMatrix(const Vector3& translate)
 	return tmp;
 }
 
-mat4x4 MakeScaleMatrix(const Vector3& scale)
-{
+mat4x4 MakeScaleMatrix(const Vector3& scale) {
 	mat4x4 tmp;
 	tmp.m[0][0] = scale.x, tmp.m[0][1] = 0.0f, tmp.m[0][2] = 0.0f, tmp.m[0][3] = 0.0f;
 	tmp.m[1][0] = 0.0f, tmp.m[1][1] = scale.y, tmp.m[1][2] = 0.0f, tmp.m[1][3] = 0.0f;
@@ -165,8 +156,7 @@ mat4x4 MakeScaleMatrix(const Vector3& scale)
 	return tmp;
 }
 
-Vector3 Transform(const Vector3& vector, const mat4x4& matrix)
-{
+Vector3 Transform(const Vector3& vector, const mat4x4& matrix) {
 	Vector3 result{ 0.0f,0.0f,0.0f };
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
 	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
@@ -181,8 +171,7 @@ Vector3 Transform(const Vector3& vector, const mat4x4& matrix)
 
 }
 
-mat4x4 MakeRotateXMatrix(float radian)
-{
+mat4x4 MakeRotateXMatrix(float radian) {
 	mat4x4 mat;
 	mat.m[0][0] = 1.0f, mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = std::cos(radian), mat.m[1][2] = std::sin(radian), mat.m[1][3] = 0.0f;
@@ -191,8 +180,7 @@ mat4x4 MakeRotateXMatrix(float radian)
 	return mat;
 }
 
-mat4x4 MakeRotateYMatrix(float radian)
-{
+mat4x4 MakeRotateYMatrix(float radian) {
 	mat4x4 mat;
 	mat.m[0][0] = std::cos(radian), mat.m[0][1] = 0.0f, mat.m[0][2] = -std::sin(radian), mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = 1.0f, mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -201,8 +189,7 @@ mat4x4 MakeRotateYMatrix(float radian)
 	return mat;
 }
 
-mat4x4 MakeRotateZMatrix(float radian)
-{
+mat4x4 MakeRotateZMatrix(float radian) {
 	mat4x4 mat;
 	mat.m[0][0] = std::cos(radian), mat.m[0][1] = std::sin(radian), mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = -std::sin(radian), mat.m[1][1] = std::cos(radian), mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -211,8 +198,7 @@ mat4x4 MakeRotateZMatrix(float radian)
 	return mat;
 }
 
-mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
-{
+mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	mat4x4 tmp = Mul(MakeRotateXMatrix(rotate.x), Mul(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
 
 	mat4x4 mat;
@@ -223,8 +209,7 @@ mat4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vecto
 	return mat;
 }
 
-mat4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
-{
+mat4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	mat4x4 mat;
 	mat.m[0][0] = (1.0f / aspectRatio) * (1.0f / std::tan(fovY / 2.0f)), mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = 1.0f / std::tan(fovY / 2.0f), mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -233,8 +218,7 @@ mat4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, f
 	return mat;
 }
 
-mat4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
-{
+mat4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
 	mat4x4 mat;
 	mat.m[0][0] = 2.0f / (right - left), mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = 2.0f / (top - bottom), mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -243,8 +227,7 @@ mat4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, 
 	return mat;
 }
 
-mat4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
-{
+mat4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	mat4x4 mat;
 	mat.m[0][0] = width / 2.0f, mat.m[0][1] = 0.0f, mat.m[0][2] = 0.0f, mat.m[0][3] = 0.0f;
 	mat.m[1][0] = 0.0f, mat.m[1][1] = -height / 2.0f, mat.m[1][2] = 0.0f, mat.m[1][3] = 0.0f;
@@ -253,8 +236,7 @@ mat4x4 MakeViewportMatrix(float left, float top, float width, float height, floa
 	return mat;
 }
 
-Vector3 operator*(const mat4x4& matrix, const Vector3& vector)
-{
+Vector3 operator*(const mat4x4& matrix, const Vector3& vector) {
 	Vector3 result{ 0.0f,0.0f,0.0f };
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
 	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
@@ -269,7 +251,7 @@ Vector3 operator*(const mat4x4& matrix, const Vector3& vector)
 }
 
 Vector3 operator-(const Vector3& v1) {
-	return {-v1.x,-v1.y,-v1.z};
+	return { -v1.x,-v1.y,-v1.z };
 }
 
 
@@ -280,17 +262,15 @@ Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
 
 float Dot(const Vector3& a, const Vector3& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 
-float Length(const Vector3& a)
-{
-	return sqrtf( (a.x * a.x)+ (a.y * a.y)+ (a.z * a.z) );
+float Length(const Vector3& a) {
+	return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 }
 
 
 float Dot(const Vec2& a, const Vec2& b) { return a.x * b.x + a.y * b.y; }
 
-float Length(const Vec2& a, const Vec2& b)
-{
-	return sqrtf(Dot(a,b));
+float Length(const Vec2& a, const Vec2& b) {
+	return sqrtf(Dot(a, b));
 }
 
 Vector3 Cross(const Vector3& a, const Vector3& b) {
@@ -307,12 +287,22 @@ Vector3 operator-(const Vector3& v, const Vector3& v2) {
 	return tmp;
 }
 
+Vector3 operator/(const Vector3& v, float v2) {
+	return Vector3(v.x / v2, v.y / v2, v.z / v2);
+}
+
+Vector3& operator+=(Vector3& v, const Vector3& v2) {
+	v.x += v2.x;
+	v.y += v2.y;
+	v.z += v2.z;
+	return v;
+}
+
 Vector3 operator*(const Vector3& v, const Vector3& v2) {
 	return { v.x * v2.x ,v.y * v2.y , v.z * v2.z };
 }
 
-Vector3 operator*(float v, const Vector3& v2)
-{
+Vector3 operator*(float v, const Vector3& v2) {
 	return Vector3(v2.x * v, v2.y * v, v2.z * v);
 }
 
@@ -321,11 +311,10 @@ Vector2 operator*(float v, const Vector2& v2) {
 }
 
 mat4x4 operator*(const mat4x4& mat1, const mat4x4& mat2) {
-	return Mul(mat1,mat2);
+	return Mul(mat1, mat2);
 }
 
-Vector3 Project(const Vector3& v1, const Vector3& V2)
-{
+Vector3 Project(const Vector3& v1, const Vector3& V2) {
 	Vector3 tmp;
 	Vector3 v2 = V2;
 	v2.Normalize();
@@ -333,8 +322,7 @@ Vector3 Project(const Vector3& v1, const Vector3& V2)
 	return tmp;
 }
 
-Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
-{
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment) {
 	Vector3 proj = Project(point - segment.origin, segment.diff);
 	return segment.origin + proj;
 }
@@ -343,15 +331,14 @@ Vector3 Perpendicular(const Vector3& vector) {
 	if (vector.x != 0.0f || vector.y != 0.0f) {
 		return { -vector.y,vector.x,0.0f };
 	}
-	return { 0.0f ,-vector.z,vector.y};
+	return { 0.0f ,-vector.z,vector.y };
 }
 
-Vector3 Normalize(const Vector3& vector)
-{
+Vector3 Normalize(const Vector3& vector) {
 	Vector3 tmp = vector;
 	float length = Length(tmp);
 	assert(length != 0.0f);
-	tmp.x/= length;
+	tmp.x /= length;
 	tmp.y /= length;
 	tmp.z /= length;
 	return tmp;
@@ -386,16 +373,16 @@ AABB AABBAssignment(const AABB& aabb) {
 	return result;
 }
 
-OBB OBBSetRotate(const OBB& Obb,const Vector3& rotate) {
+OBB OBBSetRotate(const OBB& Obb, const Vector3& rotate) {
 	// 回転行列を生成
 	mat4x4 rotateMatrix = Mul(MakeRotateXMatrix(rotate.x), Mul(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
-	
+
 	// 回転行列から軸を抽出
 	OBB obb = Obb;
 
 	obb.orientations[0].x = rotateMatrix.m[0][0];
 	obb.orientations[0].y = rotateMatrix.m[0][1];
-	obb.orientations[0].z = rotateMatrix.m[0][2]; 
+	obb.orientations[0].z = rotateMatrix.m[0][2];
 
 	obb.orientations[1].x = rotateMatrix.m[1][0];
 	obb.orientations[1].y = rotateMatrix.m[1][1];
@@ -462,7 +449,7 @@ void OBBIndex(const OBB& obb, std::vector<Vector3>& output_vertices) {
 	output_vertices = vertices;
 }
 
-bool SeparationAxis(const Vector3 axis,const OBB obb_1, const OBB obb_2) {
+bool SeparationAxis(const Vector3 axis, const OBB obb_1, const OBB obb_2) {
 	// 分離軸
 	Vector3 L = axis;
 	// 頂点数
@@ -500,7 +487,7 @@ bool SeparationAxis(const Vector3 axis,const OBB obb_1, const OBB obb_2) {
 
 Vector2 QuadraticBezier(const Vector2& controlPoint0, const Vector2& controlPoint1, const Vector2& controlPoint2, float t) {
 	// 制御点p0,p1を線形補間
-	Vector2 p0p1 = Lerp(controlPoint0, controlPoint1,t);
+	Vector2 p0p1 = Lerp(controlPoint0, controlPoint1, t);
 	// 制御点p1,p2線形補間
 	Vector2 p1p2 = Lerp(controlPoint1, controlPoint2, t);
 	// 補間点p0p1,p1p2をさらに線形補間

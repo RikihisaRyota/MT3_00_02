@@ -133,5 +133,8 @@
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="OBB.h" />
+    <ClInclude Include="Spring.h" />
+    <ClInclude Include="Ball.h" />
   </ItemGroup>
 </Project>

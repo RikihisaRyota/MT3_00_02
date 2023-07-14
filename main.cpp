@@ -1,8 +1,11 @@
 #include <Novice.h>
 #include <cstdint>
+
+#include "Ball.h"
 #include "imgui.h"
 #include "mat4x4.h"
 #include "Sphere.h"
+#include "Spring.h"
 #include "Triangle.h"
 #include "Plane.h"
 #include "OBB.h"
@@ -184,7 +187,7 @@ void DrawAABB(const AABB& aabb, const mat4x4& viewProjectionMatrix, const mat4x4
 	};
 	for (int i = 0; i < 4; i++) {
 		int j = (i + 1) % 4;
-		DrawLine(vertices[i], vertices[j], viewProjectionMatrix, viewPortMatrix,color);
+		DrawLine(vertices[i], vertices[j], viewProjectionMatrix, viewPortMatrix, color);
 		DrawLine(vertices[i], vertices[i + 4], viewProjectionMatrix, viewPortMatrix, color);
 		DrawLine(vertices[i + 4], vertices[j + 4], viewProjectionMatrix, viewPortMatrix, color);
 	}
@@ -219,11 +222,11 @@ void DrawOBB(const OBB& obb, const mat4x4& viewProjectionMatrix, const mat4x4& v
 	}
 }
 
-void DrawBezier(const Vector3& v1, const Vector3& v2, const Vector3& v3,const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
+void DrawBezier(const Vector3& v1, const Vector3& v2, const Vector3& v3, const mat4x4& viewProjectionMatrix, const mat4x4& viewPortMatrix, uint32_t color) {
 	const int32_t DivisionCount = 16;
 	for (float i = 1.0f; i < DivisionCount; i++) {
 		DrawLine(
-			CubicBezier(v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)), 
+			CubicBezier(v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)),
 			CubicBezier(v1, v2, v3, static_cast<float>(i) / static_cast<float>(DivisionCount)),
 			viewProjectionMatrix,
 			viewPortMatrix,
@@ -244,7 +247,7 @@ void DrawCatmullRom(const Vector3 v0, const Vector3& v1, const Vector3& v2, cons
 		// p1,p2間
 		DrawLine(
 			CubicCatmullRom(v0, v1, v2, v3, static_cast<float>(i - 1) / static_cast<float>(DivisionCount)),
-			CubicCatmullRom(v0, v1, v2, v3,  static_cast<float>(i) / static_cast<float>(DivisionCount)),
+			CubicCatmullRom(v0, v1, v2, v3, static_cast<float>(i) / static_cast<float>(DivisionCount)),
 			viewProjectionMatrix,
 			viewPortMatrix,
 			color);
@@ -329,16 +332,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.max{1.0f,1.0f,1.0f},
 	};
 	int32_t aabb_2Color = WHITE;
-	Vector3 a{ 0.2f,1.0f,0.0f };
-	Vector3 b{ 2.4f,3.1f,1.2f };
-	Vector3 c = a + b;
-	Vector3 d = a - b;
-	Vector3 e = a * 2.4f;
-	Vector3 rotate{ 0.4f,1.43f,-0.8f };
-	mat4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
-	mat4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
-	mat4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
-	mat4x4 rotateMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+
+	Spring spring{
+		.anchor_{0.0f,0.0f,0.0f},
+		.natureLength_{1.0f},
+		.stiffness_{100.0f},
+		.dampingCoefficient_{2.0f},
+	};
+	Ball ball{
+		.position_{1.2f,0.0f,0.0f},
+		.mass_{2.0f},
+		.radius_{0.05f},
+		.color_{BLUE},
+	};
+	const Vector3 kGravity{ 0.0f,-9.8f,0.0f };
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
@@ -360,6 +367,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		mat4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
 		mat4x4 viewportMatrix = MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 		Vector3 screenVertices[3];
+
 		for (uint32_t i = 0; i < 3; ++i) {
 			Vector3 ndcVertex = Transform(kLocalvertices[i], Mul(viewMatrix, projectionMatrix));
 			screenVertices[i] = Transform(ndcVertex, viewportMatrix);
@@ -382,16 +390,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
 
 		ImGui::Begin("point");
-		ImGui::Text("c:%f,%f,%f", c.x,c.y,c.z);
-		ImGui::Text("d:%f,%f,%f", d.x, d.y, d.z);
-		ImGui::Text("e:%f,%f,%f", e.x, e.y, e.z);
-		ImGui::Text("matrix:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f",
-			rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
-			rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
-			rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
-			rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]
-			);
+		ImGui::DragFloat3("anchor_", &spring.anchor_.x,0.01f);
 		ImGui::End();
+		float deltaTime = 1.0f / 60.0f;
+		Vector3 diff = ball.position_ - spring.anchor_;
+		float length = Length(diff);
+		if (length != 0.0f) {
+			Vector3 direction = Normalize(diff);
+			Vector3 restPosition = spring.anchor_ + direction * spring.natureLength_;
+			Vector3 displacement = length * (ball.position_ - restPosition);
+			Vector3 restoringForce = -spring.stiffness_ * displacement;
+			Vector3 dampingForce = -spring.dampingCoefficient_ * ball.velocity_;
+			Vector3 force = restoringForce + dampingForce;
+			ball.acceleration_ = force / ball.mass_;
+		}
+		//ball.acceleration_ += kGravity;
+		ball.velocity_ += ball.acceleration_ * deltaTime;
+		ball.position_ += ball.velocity_ * deltaTime;
 		///
 		/// ↑更新処理ここまで
 		///
@@ -400,6 +415,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
+		DrawLine(spring.anchor_, ball.position_, viewProjectMatrix, viewportMatrix, WHITE);
+		DrawSphere(Sphere(ball.position_, 0.05f), viewProjectMatrix, viewportMatrix, ball.color_);
 		/// ↑描画処理ここまで
 		///
 
