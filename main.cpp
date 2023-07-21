@@ -360,6 +360,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.angularVelocity{0.0f},
 		.angularAcceleration{0.0f},
 	};
+
+	bool startFlag = false;
 	const float deltaTime = 1.0f / 60.0f;
 
 	const Vector3 kGravity{ 0.0f,-9.8f,0.0f };
@@ -406,20 +408,45 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
 		ImGui::Begin("point");
-		ImGui::DragFloat3("anchor", &pendulum.anchor.x,0.01f);
-		ImGui::DragFloat("angle", &pendulum.angle,0.01f);
-		ImGui::DragFloat("length", &pendulum.length,0.01f);
+		ImGui::DragFloat3("anchor", &pendulum.anchor.x, 0.01f);
+		ImGui::DragFloat("angle", &pendulum.angle, 0.01f);
+		ImGui::DragFloat("length", &pendulum.length, 0.01f);
+		if (ImGui::Button("flag")) {
+			startFlag ^= true;
+		};
 		ImGui::End();
-#pragma region 振り子
-		pendulum.angularAcceleration = -(9.8f / pendulum.length) * std::sin(pendulum.angle);
-		pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
-		pendulum.angle += pendulum.angularVelocity * deltaTime;
 
-		// 取り付ける
+#pragma region 円
 		Vector3 p;
-		p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
-		p.y = pendulum.anchor.x - std::cos(pendulum.angle) * pendulum.length;
-		p.z = pendulum.anchor.z;
+		if (startFlag) {
+			pendulum.angularVelocity += 0.04f;
+			pendulum.angle += pendulum.angularVelocity * deltaTime;
+
+			// 取り付ける
+			p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+			p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
+			p.z = pendulum.anchor.z;
+		}
+		else {
+			pendulum.angularVelocity = 0.0f;
+			p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+			p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
+			p.z = pendulum.anchor.z;
+		}
+#pragma endregion
+
+#pragma endregion
+
+#pragma region 振り子
+		//pendulum.angularAcceleration = -(9.8f / pendulum.length) * std::sin(pendulum.angle);
+		//pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
+		//pendulum.angle += pendulum.angularVelocity * deltaTime;
+
+		//// 取り付ける
+		//Vector3 p;
+		//p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+		//p.y = pendulum.anchor.x - std::cos(pendulum.angle) * pendulum.length;
+		//p.z = pendulum.anchor.z;
 #pragma endregion
 
 #pragma region ばね
