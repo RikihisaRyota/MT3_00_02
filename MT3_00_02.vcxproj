@@ -149,6 +149,7 @@
     <ClInclude Include="Matrix33 .h" />
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="OBB.h" />
+    <ClInclude Include="Pendulum.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Spring.h" />

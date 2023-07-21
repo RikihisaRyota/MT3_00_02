@@ -110,10 +110,16 @@ bool SeparationAxis(const Vector3 axis, const OBB obb_1, const OBB obb_2);
 Vector2 QuadraticBezier(const Vector2& controlPoint0,const Vector2& controlPoint1,const Vector2& controlPoint2,float t);
 // 三次ベジエ
 Vector3 CubicBezier(const Vector3& controlPoint0,const Vector3& controlPoint1,const Vector3& controlPoint2,float t);
+
 // Lerp
-float Lerp(float start, float end, float t);
-Vector2 Lerp(const Vector2& start, const Vector2& end, float t);
-Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
+//float Lerp(float start, float end, float t);
+//Vector2 Lerp(const Vector2& start, const Vector2& end, float t);
+//Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
+template <class T> T Lerp(const T& start,const T& end,float t);
+template<class T>
+inline T Lerp(const T& start, const T& end, float t) {
+	return start + t * (end - start);
+}
 // Slarp
 Vector2 Slerp(const Vector2& start, const Vector2& end, float t);
 Vector3 Slerp(const Vector3& start, const Vector3& end, float t);
@@ -123,3 +129,4 @@ Vector3 CubicCatmullRom(const Vector3& Position0, const Vector3& Position1, cons
 
 // 平行移動取得
 Vector3 GetTranslates(const mat4x4 mat);
+

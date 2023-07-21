@@ -503,17 +503,17 @@ Vector3 CubicBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, 
 	return Lerp(p0p1, p1p2, t);
 }
 
-float Lerp(float start, float end, float t) {
-	return start + t * (end - start);
-}
-
-Vector2 Lerp(const Vector2& start, const Vector2& end, float t) {
-	return start + t * (end - start);
-}
-
-Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
-	return start + t * (end - start);
-}
+//float Lerp(float start, float end, float t) {
+//	return start + t * (end - start);
+//}
+//
+//Vector2 Lerp(const Vector2& start, const Vector2& end, float t) {
+//	return start + t * (end - start);
+//}
+//
+//Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
+//	return start + t * (end - start);
+//}
 
 Vector2 Slerp(const Vector2& v1, const Vector2& v2, float t) {
 	// 2つのベクトルの内積を計算

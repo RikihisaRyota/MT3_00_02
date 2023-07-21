@@ -7,6 +7,7 @@
 #include "Sphere.h"
 #include "Spring.h"
 #include "Triangle.h"
+#include "Pendulum.h"
 #include "Plane.h"
 #include "OBB.h"
 #include "MyMath.h"
@@ -345,6 +346,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.radius_{0.05f},
 		.color_{BLUE},
 	};
+
+	Vector3 points[3] = {
+		{-0.8f,0.58f,1.0f},
+		{1.76f,1.0f,-0.3f},
+		{0.94f,-0.7f,2.3f},
+	};
+
+	Pendulum pendulum{
+		.anchor{0.0f,1.0f,0.0f},
+		.length{0.9f},
+		.angle{1.0f},
+		.angularVelocity{0.0f},
+		.angularAcceleration{0.0f},
+	};
+	const float deltaTime = 1.0f / 60.0f;
+
 	const Vector3 kGravity{ 0.0f,-9.8f,0.0f };
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -388,11 +405,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();
 
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
-
 		ImGui::Begin("point");
-		ImGui::DragFloat3("anchor_", &spring.anchor_.x,0.01f);
+		ImGui::DragFloat3("anchor", &pendulum.anchor.x,0.01f);
+		ImGui::DragFloat("angle", &pendulum.angle,0.01f);
+		ImGui::DragFloat("length", &pendulum.length,0.01f);
 		ImGui::End();
-		float deltaTime = 1.0f / 60.0f;
+#pragma region 振り子
+		pendulum.angularAcceleration = -(9.8f / pendulum.length) * std::sin(pendulum.angle);
+		pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
+		pendulum.angle += pendulum.angularVelocity * deltaTime;
+
+		// 取り付ける
+		Vector3 p;
+		p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+		p.y = pendulum.anchor.x - std::cos(pendulum.angle) * pendulum.length;
+		p.z = pendulum.anchor.z;
+#pragma endregion
+
+#pragma region ばね
+		/*
 		Vector3 diff = ball.position_ - spring.anchor_;
 		float length = Length(diff);
 		if (length != 0.0f) {
@@ -406,7 +437,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		ball.acceleration_ += kGravity;
 		ball.velocity_ += ball.acceleration_ * deltaTime;
-		ball.position_ += ball.velocity_ * deltaTime;
+		ball.position_ += ball.velocity_ * deltaTime;*/
+#pragma endregion
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -415,8 +448,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		DrawLine(spring.anchor_, ball.position_, viewProjectMatrix, viewportMatrix, WHITE);
-		DrawSphere(Sphere(ball.position_, 0.05f), viewProjectMatrix, viewportMatrix, ball.color_);
+		DrawLine(pendulum.anchor, p, viewProjectMatrix, viewportMatrix, WHITE);
+		DrawSphere(Sphere(p, 0.05f), viewProjectMatrix, viewportMatrix, ball.color_);
+		//DrawBezier(points[0], points[1], points[2], viewProjectMatrix, viewportMatrix, WHITE);
 		/// ↑描画処理ここまで
 		///
 
