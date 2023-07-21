@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "Ball.h"
+#include "ConicalPendulum.h"
 #include "imgui.h"
 #include "mat4x4.h"
 #include "Sphere.h"
@@ -361,6 +362,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.angularAcceleration{0.0f},
 	};
 
+	ConicalPendulum conicalPendulum{
+		.anchor {0.0f,1.0f,0.0f},
+		.length {0.8f},
+		.halfApexAngle{0.7f},
+		.angle{0.0f},
+		.angularVelocity{0.0f},
+	};
+
 	bool startFlag = false;
 	const float deltaTime = 1.0f / 60.0f;
 
@@ -408,33 +417,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
 		ImGui::Begin("point");
-		ImGui::DragFloat3("anchor", &pendulum.anchor.x, 0.01f);
-		ImGui::DragFloat("angle", &pendulum.angle, 0.01f);
-		ImGui::DragFloat("length", &pendulum.length, 0.01f);
+		ImGui::DragFloat3("anchor", &conicalPendulum.anchor.x, 0.01f);
+		ImGui::DragFloat("angle", &conicalPendulum.angle, 0.01f);
+		ImGui::DragFloat("length", &conicalPendulum.length, 0.01f);
 		if (ImGui::Button("flag")) {
 			startFlag ^= true;
 		};
 		ImGui::End();
 
 #pragma region 円
-		Vector3 p;
-		if (startFlag) {
-			pendulum.angularVelocity += 0.04f;
-			pendulum.angle += pendulum.angularVelocity * deltaTime;
+		//Vector3 p;
+		//if (startFlag) {
+		//	pendulum.angularVelocity += 0.04f;
+		//	pendulum.angle += pendulum.angularVelocity * deltaTime;
 
-			// 取り付ける
-			p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
-			p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
-			p.z = pendulum.anchor.z;
-		}
-		else {
-			pendulum.angularVelocity = 0.0f;
-			p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
-			p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
-			p.z = pendulum.anchor.z;
-		}
-#pragma endregion
-
+		//	// 取り付ける
+		//	p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+		//	p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
+		//	p.z = pendulum.anchor.z;
+		//}
+		//else {
+		//	pendulum.angularVelocity = 0.0f;
+		//	p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+		//	p.y = pendulum.anchor.y + std::cos(pendulum.angle) * pendulum.length;
+		//	p.z = pendulum.anchor.z;
+		//}
 #pragma endregion
 
 #pragma region 振り子
@@ -448,6 +455,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//p.y = pendulum.anchor.x - std::cos(pendulum.angle) * pendulum.length;
 		//p.z = pendulum.anchor.z;
 #pragma endregion
+
+#pragma region 円錐振り子
+		if (startFlag) {
+			conicalPendulum.angularVelocity = std::sqrt(9.8f / (conicalPendulum.length * std::cos(conicalPendulum.halfApexAngle)));
+		}
+		else {
+			conicalPendulum.angularVelocity = 0;
+		}
+			conicalPendulum.angle += conicalPendulum.angularVelocity * deltaTime;
+			float radius = std::sin(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+			float height = std::cos(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+			Vector3 p;
+			p.x = conicalPendulum.anchor.x + std::cos(conicalPendulum.angle) * radius;
+			p.y = conicalPendulum.anchor.y - height;
+			p.z = conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius;
+	
+		
+#pragma endregion
+
 
 #pragma region ばね
 		/*
