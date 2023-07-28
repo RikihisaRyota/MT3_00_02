@@ -344,18 +344,15 @@ Vector3 Normalize(const Vector3& vector) {
 	return tmp;
 }
 
-bool Intersection(Vector3& intersection, const Plane& plane, const Segment& segment) {
+Vector3 Intersection(const Plane& plane, const Segment& segment) {
 	// 垂直判定
 	float d = Dot(plane.normal_, segment.diff);
 	// 平行だったら
-	if (d == 0.0f) {
-		return false;
-	}
+	assert(d != 0.0f);
 	// 線分と平面の当たり判定
 	float t = (plane.distanse_ - Dot(segment.origin, plane.normal_)) / d;
 	// 線分と平面の当たったポイント
-	intersection = segment.origin + d * segment.diff;
-	return true;
+	return (segment.origin + t * segment.diff);
 }
 
 AABB AABBAssignment(const AABB& aabb) {

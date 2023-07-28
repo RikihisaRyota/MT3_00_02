@@ -87,7 +87,7 @@ Vector3 Perpendicular(const Vector3& vector);
 Vector3 Normalize(const Vector3& vector);
 
 // 平面と線分の当たった場所
-bool Intersection(Vector3& intersection, const Plane& plane, const Segment& segment);
+Vector3 Intersection(const Plane& plane, const Segment& segment);
 
 // AABBに値を代入
 AABB AABBAssignment(const AABB& aabb);

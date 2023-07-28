@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "Ball.h"
+#include "Capsule.h"
 #include "ConicalPendulum.h"
 #include "imgui.h"
 #include "mat4x4.h"
@@ -342,7 +343,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		.dampingCoefficient_{2.0f},
 	};
 	Ball ball{
-		.position_{1.2f,0.0f,0.0f},
+		.position_{1.2f,0.5f,0.0f},
 		.mass_{2.0f},
 		.radius_{0.05f},
 		.color_{BLUE},
@@ -417,8 +418,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
 		ImGui::Begin("plane");
-		ImGui::SliderFloat3("normal", &plane_.normal_.x, 0.0f,1.0f);
-		ImGui::SliderFloat("distanse", &plane_.distanse_, -1.0f,1.0f);
+		ImGui::SliderFloat3("normal", &plane_.normal_.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("distanse", &plane_.distanse_, -1.0f, 1.0f);
+		plane_.normal_.Normalize();
 		ImGui::End();
 
 		ImGui::Begin("ball");
@@ -431,16 +433,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		};
 		ImGui::End();
+		Capsule capsule;
 		if (startFlag) {
+			Vector3 preBallPosition = ball.position_;
 			ball.acceleration_ = kGravity;
 			ball.velocity_ += ball.acceleration_ * deltaTime;
 			ball.position_ += ball.velocity_ * deltaTime;
-			if (IsCollision(Sphere(ball.position_, ball.radius_), plane_)) {
-				// 反発係数
-				const float e = 0.8f;
-				ball.velocity_ = Reflect(ball.velocity_,plane_.normal_) * e;
+			capsule = {
+				.segment = {preBallPosition ,ball.position_ - preBallPosition},
+				.radius = {ball.radius_},
+			};
+			if (IsCollision(plane_, capsule.segment)) {
+				Vector3 collisionPoint = Intersection(plane_,capsule.segment);
+				ball.position_ = collisionPoint + (plane_.normal_ * capsule.radius);
+				if (IsCollision(Sphere(ball.position_, ball.radius_), plane_)) {
+					// 反発係数
+					const float e = 0.8f;
+					ball.velocity_ = Reflect(ball.velocity_, plane_.normal_) * e;
+				}
 			}
 		}
+
 #pragma region 円
 		//Vector3 p;
 		//if (startFlag) {
@@ -514,12 +527,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		DrawSphere(Sphere(ball.position_, ball.radius_), viewProjectMatrix, viewportMatrix, ball.color_);
-		DrawPlane(plane_, viewProjectMatrix, viewportMatrix,WHITE);
+		DrawSphere(Sphere(ball.position_, ball.radius_), viewProjectMatrix, viewportMatrix, 0xFFFFFFFF);
+		DrawPlane(plane_, viewProjectMatrix, viewportMatrix, WHITE);
 		//DrawBezier(points[0], points[1], points[2], viewProjectMatrix, viewportMatrix, WHITE);
 		/// ↑描画処理ここまで
 		///
-
+		
 		// フレームの終了
 		Novice::EndFrame();
 
