@@ -130,3 +130,5 @@ Vector3 CubicCatmullRom(const Vector3& Position0, const Vector3& Position1, cons
 // 平行移動取得
 Vector3 GetTranslates(const mat4x4 mat);
 
+// Reflect
+Vector3 Reflect(const Vector3& input, const Vector3& normal);

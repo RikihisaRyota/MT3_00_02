@@ -416,15 +416,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();
 
 		obb_0 = OBBSetRotate(obb_0, rotate);*/
-		ImGui::Begin("point");
-		ImGui::DragFloat3("anchor", &conicalPendulum.anchor.x, 0.01f);
-		ImGui::DragFloat("angle", &conicalPendulum.angle, 0.01f);
-		ImGui::DragFloat("length", &conicalPendulum.length, 0.01f);
-		if (ImGui::Button("flag")) {
-			startFlag ^= true;
-		};
+		ImGui::Begin("plane");
+		ImGui::SliderFloat3("normal", &plane_.normal_.x, 0.0f,1.0f);
+		ImGui::SliderFloat("distanse", &plane_.distanse_, -1.0f,1.0f);
 		ImGui::End();
 
+		ImGui::Begin("ball");
+		ImGui::DragFloat3("position", &ball.position_.x, 0.01f);
+		if (ImGui::Button("start")) {
+			startFlag ^= true;
+			ball.velocity_ = Vector3(0.0f, 0.0f, 0.0f);
+			if (!startFlag) {
+				ball.position_ = Vector3(0.0f, 0.0f, 0.0f);
+			}
+		};
+		ImGui::End();
+		if (startFlag) {
+			ball.acceleration_ = kGravity;
+			ball.velocity_ += ball.acceleration_ * deltaTime;
+			ball.position_ += ball.velocity_ * deltaTime;
+			if (IsCollision(Sphere(ball.position_, ball.radius_), plane_)) {
+				// 反発係数
+				const float e = 0.8f;
+				ball.velocity_ = Reflect(ball.velocity_,plane_.normal_) * e;
+			}
+		}
 #pragma region 円
 		//Vector3 p;
 		//if (startFlag) {
@@ -457,23 +473,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 #pragma region 円錐振り子
-		if (startFlag) {
+		/*if (startFlag) {
 			conicalPendulum.angularVelocity = std::sqrt(9.8f / (conicalPendulum.length * std::cos(conicalPendulum.halfApexAngle)));
 		}
 		else {
 			conicalPendulum.angularVelocity = 0;
 		}
-			conicalPendulum.angle += conicalPendulum.angularVelocity * deltaTime;
-			float radius = std::sin(conicalPendulum.halfApexAngle) * conicalPendulum.length;
-			float height = std::cos(conicalPendulum.halfApexAngle) * conicalPendulum.length;
-			Vector3 p;
-			p.x = conicalPendulum.anchor.x + std::cos(conicalPendulum.angle) * radius;
-			p.y = conicalPendulum.anchor.y - height;
-			p.z = conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius;
-	
-		
+		conicalPendulum.angle += conicalPendulum.angularVelocity * deltaTime;
+		float radius = std::sin(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+		float height = std::cos(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+		Vector3 p;
+		p.x = conicalPendulum.anchor.x + std::cos(conicalPendulum.angle) * radius;
+		p.y = conicalPendulum.anchor.y - height;
+		p.z = conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius;*/
 #pragma endregion
-
 
 #pragma region ばね
 		/*
@@ -501,8 +514,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 		DrawGrid(viewProjectMatrix, viewportMatrix);
-		DrawLine(pendulum.anchor, p, viewProjectMatrix, viewportMatrix, WHITE);
-		DrawSphere(Sphere(p, 0.05f), viewProjectMatrix, viewportMatrix, ball.color_);
+		DrawSphere(Sphere(ball.position_, ball.radius_), viewProjectMatrix, viewportMatrix, ball.color_);
+		DrawPlane(plane_, viewProjectMatrix, viewportMatrix,WHITE);
 		//DrawBezier(points[0], points[1], points[2], viewProjectMatrix, viewportMatrix, WHITE);
 		/// ↑描画処理ここまで
 		///
